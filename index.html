@@ -187,6 +187,13 @@
       </form>
     </section>
   </div>
+  <div id="group-confirm-modal" class="modal-backdrop fixed inset-0 z-40 hidden items-center justify-center p-4">
+    <section role="alertdialog" aria-modal="true" aria-labelledby="group-confirm-title" aria-describedby="group-confirm-message" class="pop-in w-full max-w-sm rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 shadow-2xl">
+      <h2 id="group-confirm-title" class="text-lg font-bold">Bekräfta borttagning</h2>
+      <p id="group-confirm-message" class="mt-2 text-sm leading-6 text-muted"></p>
+      <div class="mt-6 flex justify-end gap-2"><button id="cancel-group-confirm" type="button" class="rounded-xl border border-white/10 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-white/[.06]">Avbryt</button><button id="accept-group-confirm" type="button" class="rounded-xl bg-[#f38ba8] px-4 py-2.5 text-sm font-bold text-[#2b1721] transition hover:brightness-110">Ta bort</button></div>
+    </section>
+  </div>
   <div id="rename-group-modal" class="modal-backdrop fixed inset-0 z-30 hidden items-center justify-center p-4">
     <section role="dialog" aria-modal="true" aria-labelledby="rename-group-title" class="pop-in w-full max-w-md rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 shadow-2xl">
       <div class="mb-6 flex items-start justify-between"><div><p class="text-[10px] font-bold uppercase tracking-[.17em] text-accent">Gruppinställningar</p><h2 id="rename-group-title" class="mt-2 text-xl font-bold">Byt gruppnamn</h2><p class="mt-1 text-xs text-muted">Välj ett nytt namn för gruppchatten.</p></div><button id="close-rename-group-modal" type="button" aria-label="Stäng" class="rounded-lg p-2 text-muted hover:bg-white/10 hover:text-white">✕</button></div>
@@ -285,6 +292,7 @@
     let selectedFiles = [];
     let editingMessageId = "";
     let activeMessageActionsId = "";
+    let pendingGroupConfirmation = null;
     let toastTimer;
     let chatTimeRefreshTimer;
     let signalSocket = null;
@@ -696,7 +704,21 @@
       scheduleChatTimeRefresh();
     }
     function hideConversation(id) {
-      if (!chats.some(chat => chat.id === id)) return;
+      const chat = chats.find(item => item.id === id);
+      if (!chat) return;
+      if (chat.type === "group" && chat.members?.includes(currentUser)) {
+        if (chat.owner === currentUser) {
+          requestGroupConfirmation(`Ta bort gruppchatten "${chat.name}" för alla?`, () => removeGroupFromChats(chat));
+        } else {
+          requestGroupConfirmation(`Lämna gruppchatten "${chat.name}"?`, () => {
+            chat.members = chat.members.filter(member => member !== currentUser);
+            chat.username = `${chat.members.length} medlemmar`;
+            saveChats();
+            removeGroupFromChats(chat, false);
+          }, "Lämna");
+        }
+        return;
+      }
       if (!hiddenConversationIds.includes(id)) hiddenConversationIds.push(id);
       saveHiddenConversations();
       if (selectedId === id) {
@@ -1006,10 +1028,39 @@
       $("#add-group-member-modal").classList.add("hidden");
       $("#add-group-member-modal").classList.remove("flex");
     }
+    function closeGroupConfirmModal() {
+      pendingGroupConfirmation = null;
+      $("#group-confirm-modal").classList.add("hidden");
+      $("#group-confirm-modal").classList.remove("flex");
+    }
+    function requestGroupConfirmation(message, onConfirm, confirmLabel = "Ta bort") {
+      pendingGroupConfirmation = onConfirm;
+      $("#group-confirm-message").textContent = message;
+      $("#accept-group-confirm").textContent = confirmLabel;
+      $("#group-confirm-modal").classList.remove("hidden");
+      $("#group-confirm-modal").classList.add("flex");
+      $("#cancel-group-confirm").focus();
+    }
+    function appendGroupMemberSystemMessage(chat, member, action) {
+      const sentAt = Date.now();
+      const time = new Date(sentAt).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+      const text = `${member} ${action} i gruppchatten.`;
+      chat.messages.push({ id: `system-${sentAt}`, type: "system", text, time, align: "left" });
+      chat.preview = text;
+      chat.time = time;
+      chat.lastMessageAt = sentAt;
+    }
     $("#add-group-member").addEventListener("click", openAddGroupMemberModal);
     $("#close-add-group-member-modal").addEventListener("click", closeAddGroupMemberModal);
     $("#cancel-add-group-member").addEventListener("click", closeAddGroupMemberModal);
     $("#add-group-member-modal").addEventListener("click", event => { if (event.target === $("#add-group-member-modal")) closeAddGroupMemberModal(); });
+    $("#cancel-group-confirm").addEventListener("click", closeGroupConfirmModal);
+    $("#group-confirm-modal").addEventListener("click", event => { if (event.target === $("#group-confirm-modal")) closeGroupConfirmModal(); });
+    $("#accept-group-confirm").addEventListener("click", () => {
+      const onConfirm = pendingGroupConfirmation;
+      closeGroupConfirmModal();
+      onConfirm?.();
+    });
     $("#add-group-member-form").addEventListener("submit", event => {
       event.preventDefault();
       const chat = activeChat();
@@ -1019,12 +1070,7 @@
       if (chat.members.includes(member)) { showToast(`${member} är redan medlem i gruppchatten.`); return; }
       chat.members.push(member);
       chat.username = `${chat.members.length} medlemmar`;
-      const sentAt = Date.now();
-      const time = new Date(sentAt).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
-      chat.messages.push({ id: `system-${sentAt}`, type: "system", text: `${member} lades till i gruppchatten.`, time, align: "left" });
-      chat.preview = `${member} lades till i gruppchatten.`;
-      chat.time = time;
-      chat.lastMessageAt = sentAt;
+      appendGroupMemberSystemMessage(chat, member, "lades till");
       saveChats();
       closeAddGroupMemberModal();
       renderChatList($("#chat-search").value);
@@ -1110,7 +1156,7 @@
       const chat = activeChat();
       if (chat?.type === "group") {
         if (chat.owner === currentUser) {
-          if (confirm(`Ta bort gruppchatten "${chat.name}" för alla?`)) removeGroupFromChats(chat);
+          requestGroupConfirmation(`Ta bort gruppchatten "${chat.name}" för alla?`, () => removeGroupFromChats(chat));
         } else if (chat.members.includes(currentUser) && confirm(`Vill du lämna gruppchatten "${chat.name}"?`)) {
           chat.members = chat.members.filter(member => member !== currentUser);
           chat.username = `${chat.members.length} medlemmar`;
@@ -1139,20 +1185,16 @@
     function removeGroupMember(member) {
       const chat = activeChat();
       if (chat?.type !== "group" || chat.owner !== currentUser || member === currentUser || member === chat.owner || !chat.members.includes(member)) return;
-      if (!confirm(`Ta bort ${member} från gruppchatten "${chat.name}"?`)) return;
-      chat.members = chat.members.filter(existingMember => existingMember !== member);
-      chat.username = `${chat.members.length} medlemmar`;
-      const sentAt = Date.now();
-      const time = new Date(sentAt).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
-      chat.messages.push({ id: `system-${sentAt}`, type: "system", text: `${member} togs bort från gruppchatten.`, time, align: "left" });
-      chat.preview = `${member} togs bort från gruppchatten.`;
-      chat.time = time;
-      chat.lastMessageAt = sentAt;
-      saveChats();
-      renderChatList($("#chat-search").value);
-      renderConversation();
-      renderDetails();
-      showToast(`${member} har tagits bort från gruppchatten.`);
+      requestGroupConfirmation(`Ta bort ${member} från gruppchatten "${chat.name}"?`, () => {
+        chat.members = chat.members.filter(existingMember => existingMember !== member);
+        chat.username = `${chat.members.length} medlemmar`;
+        appendGroupMemberSystemMessage(chat, member, "togs bort");
+        saveChats();
+        renderChatList($("#chat-search").value);
+        renderConversation();
+        renderDetails();
+        showToast(`${member} har tagits bort från gruppchatten.`);
+      });
     }
     function removeGroupFromChats(chat, deleted = true) {
       chats = chats.filter(item => item.id !== chat.id);
@@ -1268,7 +1310,7 @@
     });
     $("#remove-profile-avatar").addEventListener("click", () => { profileAvatarDraft = ""; renderProfile(); });
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") { closeGroupModal(); closeAddGroupMemberModal(); closeRenameGroupModal(); closeFriendsModal(); closeProfileModal(); $("#emoji-picker").classList.add("hidden"); renderEmojiGrid(); }
+      if (event.key === "Escape") { closeGroupModal(); closeAddGroupMemberModal(); closeGroupConfirmModal(); closeRenameGroupModal(); closeFriendsModal(); closeProfileModal(); $("#emoji-picker").classList.add("hidden"); renderEmojiGrid(); }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); $("#message-search").focus(); }
     });
     renderChatList();
