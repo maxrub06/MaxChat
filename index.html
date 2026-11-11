@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#11111b">
+  <title>MaxChat — chatta med dina människor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#11111b",
+            panel: "#181825",
+            surface: "#1e1e2e",
+            muted: "#a6adc8",
+            accent: "#cba6f7",
+            mint: "#a6e3a1"
+          },
+          fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"] }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: "DM Sans", sans-serif; }
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .scrollbar-none { scrollbar-width: none; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .message-body { overflow-wrap: anywhere; }
+    .avatar { display: grid; place-items: center; flex: none; font-weight: 700; }
+    .online-dot { box-shadow: 0 0 0 3px #181825; }
+    .nav-active { background: #302748; color: #e6d9ff; }
+    .chat-active { background: #29263a; }
+    .modal-backdrop { background: rgb(7 7 15 / 75%); backdrop-filter: blur(7px); }
+    .pop-in { animation: pop-in .16s ease-out; }
+    @keyframes pop-in { from { opacity: 0; transform: translateY(5px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (max-width: 767px) {
+      body { overflow: hidden; }
+      #sidebar.mobile-hidden, #details.mobile-hidden { display: none; }
+      #chat-area.mobile-hidden { display: none; }
+    }
+  </style>
+</head>
+<body class="h-dvh overflow-hidden bg-ink text-slate-100 antialiased">
+  <main class="mx-auto flex h-full max-w-[1800px] overflow-hidden bg-ink">
+    <aside id="sidebar" class="flex w-full shrink-0 flex-col border-r border-white/[.06] bg-panel md:w-[290px]">
+      <header class="flex h-[72px] items-center justify-between border-b border-white/[.06] px-5">
+        <a href="#" class="flex items-center gap-3" aria-label="MaxChat startsida">
+          <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-accent to-[#89b4fa] text-xl font-extrabold text-[#171523] shadow-lg shadow-accent/10">M</span>
+          <span><span class="block text-[17px] font-extrabold tracking-tight">MaxChat</span><span class="block text-[10px] font-semibold uppercase tracking-[.18em] text-muted">dina människor, nära</span></span>
+        </a>
+        <button id="new-chat" aria-label="Skapa en grupp" title="Skapa en grupp" class="grid h-9 w-9 place-items-center rounded-xl text-muted transition hover:bg-white/[.07] hover:text-white">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6m3-3h-6"/></svg>
+        </button>
+      </header>
+
+      <div class="scrollbar-none flex-1 overflow-y-auto px-3 pb-3">
+        <div class="mt-4 space-y-1">
+          <button class="nav-active flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/></svg>
+            Meddelanden <span class="ml-auto rounded-full bg-accent/15 px-2 py-0.5 text-[10px] text-accent">3</span>
+          </button>
+          <button id="friends-button" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-muted transition hover:bg-white/[.05] hover:text-white">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6m3-3h-6"/></svg>
+            Vänner <span id="friends-count" class="ml-auto rounded-full bg-mint/15 px-2 py-0.5 text-[10px] text-mint">3</span>
+          </button>
+        </div>
+
+        <div class="mb-2 mt-8 flex items-center justify-between px-2">
+          <h2 class="text-[10px] font-bold uppercase tracking-[.18em] text-muted/70">Dina konversationer</h2>
+          <button id="new-chat-small" aria-label="Ny grupp" class="rounded-md p-1 text-muted transition hover:bg-white/10 hover:text-white">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+          </button>
+        </div>
+        <label class="relative mb-3 block">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-muted/60" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="chat-search" type="search" placeholder="Sök konversationer" class="w-full rounded-xl border border-white/[.05] bg-ink/60 py-2.5 pl-9 pr-3 text-xs text-white outline-none placeholder:text-muted/50 focus:border-accent/40">
+        </label>
+        <div id="chat-list" class="space-y-1"></div>
+      </div>
+
+      <footer class="flex items-center gap-3 border-t border-white/[.06] px-4 py-3.5">
+        <div class="relative">
+          <div id="profile-avatar" class="avatar h-10 w-10 rounded-full bg-[#f9e2af] text-sm text-[#372d1f]">M</div>
+          <span class="online-dot absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-panel bg-mint"></span>
+        </div>
+        <div class="min-w-0 flex-1"><p id="profile-display-name" class="truncate text-sm font-semibold">Max Rubin</p><p id="profile-status-label" class="text-[11px] text-mint">● Aktiv nu</p></div>
+        <button id="profile-button" title="Profil" aria-label="Profil" class="rounded-lg p-2 text-muted transition hover:bg-white/[.07] hover:text-white">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8Z"/></svg>
+        </button>
+      </footer>
+    </aside>
+
+    <section id="chat-area" class="mobile-hidden flex min-w-0 flex-1 flex-col bg-ink">
+      <header class="flex h-[72px] shrink-0 items-center justify-between border-b border-white/[.06] px-4 sm:px-6">
+        <div class="flex min-w-0 items-center gap-3">
+          <button id="mobile-back" aria-label="Tillbaka till konversationer" class="rounded-lg p-2 text-muted hover:bg-white/[.07] md:hidden">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div id="chat-header-avatar" class="avatar h-10 w-10 rounded-2xl bg-[#f5c2e7] text-sm text-[#342538]">S</div>
+          <div class="min-w-0"><h1 id="chat-title" class="truncate text-sm font-bold">Sofia Lind</h1><p id="chat-subtitle" class="mt-0.5 text-[11px] text-mint">● Aktiv nu</p></div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="hidden rounded-lg p-2.5 text-muted transition hover:bg-white/[.07] hover:text-white sm:block" title="Röstsamtal" aria-label="Röstsamtal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.5 3.1a2 2 0 0 1-.6 1.7L7.7 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 1.7-.6l3.1.5a2 2 0 0 1 2.2 2.5Z"/></svg>
+          </button>
+          <button id="header-details" aria-label="Visa detaljer" title="Visa detaljer" class="rounded-lg p-2.5 text-muted transition hover:bg-white/[.07] hover:text-white lg:hidden">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+          </button>
+          <label class="hidden items-center gap-2 rounded-xl border border-white/[.06] bg-panel px-3 py-2 sm:flex">
+            <svg class="text-muted/60" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="message-search" type="search" placeholder="Sök" class="w-24 bg-transparent text-xs outline-none placeholder:text-muted/60 focus:w-36 transition-all">
+            <kbd class="rounded border border-white/10 px-1 text-[9px] text-muted/60">⌘ K</kbd>
+          </label>
+        </div>
+      </header>
+
+      <div id="message-list" class="scrollbar-none flex-1 overflow-y-auto px-4 pb-6 pt-5 sm:px-7 lg:px-10"></div>
+
+      <div id="composer-wrap" class="shrink-0 px-3 pb-3 pt-1 sm:px-6 sm:pb-5">
+        <div id="attachment-preview" class="mx-auto mb-2 hidden max-w-4xl rounded-xl border border-white/10 bg-panel p-3"></div>
+        <form id="message-form" class="mx-auto flex max-w-4xl items-end gap-2 rounded-2xl border border-white/[.07] bg-panel px-2.5 py-2 shadow-xl shadow-black/10 focus-within:border-accent/30 sm:px-3">
+          <label title="Bifoga filer" class="grid h-10 w-9 shrink-0 cursor-pointer place-items-center rounded-xl text-muted transition hover:bg-white/[.07] hover:text-accent">
+            <input id="file-input" type="file" multiple class="hidden">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.4 11.1-8.5 8.5a6 6 0 0 1-8.5-8.5l8.5-8.5a4 4 0 0 1 5.7 5.7l-8.5 8.5a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
+          </label>
+          <textarea id="message-input" rows="1" placeholder="Skriv ett meddelande..." class="max-h-32 min-h-10 flex-1 resize-none bg-transparent py-2.5 text-[13px] leading-5 outline-none placeholder:text-muted/50"></textarea>
+          <div class="relative">
+            <button type="button" id="emoji-button" aria-label="Välj emoji" title="Välj emoji" class="grid h-10 w-9 place-items-center rounded-xl text-muted transition hover:bg-white/[.07] hover:text-[#f9e2af]">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+            </button>
+            <div id="emoji-picker" class="absolute bottom-12 right-0 z-10 hidden w-56 rounded-2xl border border-white/10 bg-[#242435] p-3 shadow-2xl">
+              <p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Reaktioner</p>
+              <div id="emoji-grid" class="grid grid-cols-6 gap-1"></div>
+            </div>
+          </div>
+          <button type="submit" aria-label="Skicka meddelande" class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent text-[#211a2c] transition hover:brightness-110 active:scale-95">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          </button>
+        </form>
+        <p class="mx-auto mt-2 hidden max-w-4xl text-center text-[10px] text-muted/40 sm:block">Tryck <kbd class="rounded border border-white/10 px-1">Enter</kbd> för att skicka · <kbd class="rounded border border-white/10 px-1">Shift + Enter</kbd> för ny rad</p>
+      </div>
+    </section>
+
+    <aside id="details" class="mobile-hidden hidden w-[270px] shrink-0 border-l border-white/[.06] bg-panel lg:flex lg:flex-col">
+      <div class="flex h-[72px] items-center justify-between border-b border-white/[.06] px-5"><h2 class="text-xs font-bold">Konversationsinfo</h2><button id="close-details" aria-label="Stäng detaljer" class="rounded-lg p-1.5 text-muted hover:bg-white/10 hover:text-white lg:hidden">✕</button></div>
+      <div class="scrollbar-none overflow-y-auto px-5">
+        <div class="flex flex-col items-center border-b border-white/[.06] py-7 text-center">
+          <div id="details-avatar" class="avatar h-[76px] w-[76px] rounded-[26px] bg-[#f5c2e7] text-2xl text-[#342538]">S</div>
+          <h3 id="details-title" class="mt-4 text-base font-bold">Sofia Lind</h3>
+          <p id="details-username" class="mt-1 text-xs text-muted">@sofialind</p>
+          <p class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint"><span class="h-1.5 w-1.5 rounded-full bg-mint"></span>Aktiv nu</p>
+        </div>
+        <div class="border-b border-white/[.06] py-5"><h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Delade filer</h4><div id="shared-files" class="space-y-2"></div></div>
+        <button id="clear-chat" class="mt-5 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-medium text-[#f38ba8] transition hover:bg-[#f38ba8]/10">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18m-2 0-1 14H6L5 6m4 0V4h6v2m-5 5v5m4-5v5"/></svg>Rensa konversation
+        </button>
+      </div>
+    </aside>
+  </main>
+
+  <div id="group-modal" class="modal-backdrop fixed inset-0 z-30 hidden items-center justify-center p-4">
+    <section role="dialog" aria-modal="true" aria-labelledby="modal-title" class="pop-in w-full max-w-md rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 shadow-2xl">
+      <div class="mb-6 flex items-start justify-between"><div><p class="text-[10px] font-bold uppercase tracking-[.17em] text-accent">Något nytt börjar här</p><h2 id="modal-title" class="mt-2 text-xl font-bold">Skapa en grupp</h2><p class="mt-1 text-xs text-muted">Samla dina favoritmänniskor på ett ställe.</p></div><button id="close-modal" aria-label="Stäng" class="rounded-lg p-2 text-muted hover:bg-white/10 hover:text-white">✕</button></div>
+      <form id="group-form" class="space-y-4">
+        <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Gruppnamn</span><input id="group-name" required maxlength="40" placeholder="t.ex. Fredagshänget" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none placeholder:text-muted/50 focus:border-accent/50"></label>
+        <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Bjud in personer <span class="font-normal text-muted">(frivilligt)</span></span><input id="group-members" placeholder="Skriv namn, separerade med komma" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none placeholder:text-muted/50 focus:border-accent/50"></label>
+        <button type="submit" class="w-full rounded-xl bg-accent py-3 text-sm font-bold text-[#211a2c] transition hover:brightness-110">Skapa grupp</button>
+      </form>
+    </section>
+  </div>
+  <div id="friends-modal" class="modal-backdrop fixed inset-0 z-30 hidden items-center justify-center p-4">
+    <section role="dialog" aria-modal="true" aria-labelledby="friends-modal-title" class="pop-in w-full max-w-md rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 shadow-2xl">
+      <div class="mb-5 flex items-start justify-between"><div><p class="text-[10px] font-bold uppercase tracking-[.17em] text-accent">Dina människor</p><h2 id="friends-modal-title" class="mt-2 text-xl font-bold">Vänner</h2><p class="mt-1 text-xs text-muted">Starta en direktkonversation eller lägg till en vän.</p></div><button id="close-friends-modal" aria-label="Stäng" class="rounded-lg p-2 text-muted hover:bg-white/10 hover:text-white">✕</button></div>
+      <form id="add-friend-form" class="mb-5 flex gap-2">
+        <input id="friend-name" required maxlength="40" placeholder="Namn på din vän" aria-label="Namn på din vän" class="min-w-0 flex-1 rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none placeholder:text-muted/50 focus:border-accent/50">
+        <button type="submit" class="shrink-0 rounded-xl bg-accent px-4 py-3 text-xs font-bold text-[#211a2c] transition hover:brightness-110">Lägg till</button>
+      </form>
+      <label class="relative mb-3 block">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-muted/60" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="friends-search" type="search" placeholder="Sök bland dina vänner" class="w-full rounded-xl border border-white/[.05] bg-ink/60 py-2.5 pl-9 pr-3 text-xs text-white outline-none placeholder:text-muted/50 focus:border-accent/40">
+      </label>
+      <div id="friends-list" class="scrollbar-none max-h-64 space-y-1 overflow-y-auto"></div>
+    </section>
+  </div>
+  <div id="profile-modal" class="modal-backdrop fixed inset-0 z-30 hidden items-center justify-center p-4">
+    <section role="dialog" aria-modal="true" aria-labelledby="profile-modal-title" class="pop-in w-full max-w-md rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 shadow-2xl">
+      <div class="mb-6 flex items-start justify-between"><div><p class="text-[10px] font-bold uppercase tracking-[.17em] text-accent">Ditt konto</p><h2 id="profile-modal-title" class="mt-2 text-xl font-bold">Profilinställningar</h2><p class="mt-1 text-xs text-muted">Så här ser dina vänner dig.</p></div><button id="close-profile-modal" aria-label="Stäng" class="rounded-lg p-2 text-muted hover:bg-white/10 hover:text-white">✕</button></div>
+      <form id="profile-form" class="space-y-4">
+        <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Visningsnamn</span><input id="profile-name-input" required maxlength="40" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none focus:border-accent/50"></label>
+        <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Om mig</span><textarea id="profile-about-input" maxlength="120" rows="2" placeholder="Berätta lite om dig själv" class="w-full resize-none rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none placeholder:text-muted/50 focus:border-accent/50"></textarea></label>
+        <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Status</span><select id="profile-status-input" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none focus:border-accent/50"><option value="online">Aktiv nu</option><option value="away">Borta</option><option value="busy">Stör ej</option></select></label>
+        <button type="submit" class="w-full rounded-xl bg-accent py-3 text-sm font-bold text-[#211a2c] transition hover:brightness-110">Spara ändringar</button>
+      </form>
+    </section>
+  </div>
+  <div id="toast" role="status" class="pointer-events-none fixed bottom-5 left-1/2 z-40 -translate-x-1/2 translate-y-3 rounded-xl border border-white/10 bg-[#29283a] px-4 py-2.5 text-xs font-semibold text-white opacity-0 shadow-xl transition-all"></div>
+
+  <script>
+    const starterChats = [
+      { id: "sofia", name: "Sofia Lind", username: "@sofialind", type: "dm", color: "#f5c2e7", initials: "S", online: true, preview: "Haha, det låter som en plan! ✨", time: "nu", unread: 2, messages: [
+        { id: "s1", author: "Sofia Lind", initials: "S", color: "#f5c2e7", time: "14:32", text: "Hej! Har du några planer i helgen? 🌻" },
+        { id: "s2", author: "Max Rubin", initials: "M", color: "#f9e2af", time: "14:34", text: "Inte ännu! Vad tänkte du?" },
+        { id: "s3", author: "Sofia Lind", initials: "S", color: "#f5c2e7", time: "14:36", text: "Ska vi ta den där fikan vi pratat om? Jag hittade ett jättemysigt ställe vid vattnet ☕" },
+        { id: "s4", author: "Max Rubin", initials: "M", color: "#f9e2af", time: "14:38", text: "Åh ja, absolut! Har hört bra saker om det stället." },
+        { id: "s5", author: "Sofia Lind", initials: "S", color: "#f5c2e7", time: "14:39", text: "Perfekt! Lördag kl 14? 💜" },
+        { id: "s6", author: "Max Rubin", initials: "M", color: "#f9e2af", time: "14:40", text: "Haha, det låter som en plan! ✨", reactions: { "❤️": ["Sofia Lind"], "🙌": ["Sofia Lind", "Max Rubin"] } }
+      ]},
+      { id: "design", name: "Designhäng 🎨", username: "3 medlemmar", type: "group", color: "#cba6f7", initials: "D", online: false, preview: "Elias: Slänger upp skisserna strax", time: "12:45", unread: 1, members: ["Elias Norén", "Maja Berg", "Max Rubin"], messages: [
+        { id: "d1", author: "Maja Berg", initials: "M", color: "#fab387", time: "12:30", text: "Har någon testat den nya färgpaletten? 🎨" },
+        { id: "d2", author: "Elias Norén", initials: "E", color: "#89b4fa", time: "12:45", text: "Slänger upp skisserna strax" }
+      ]},
+      { id: "alex", name: "Alex Andersson", username: "@alexandersson", type: "dm", color: "#89b4fa", initials: "A", online: true, preview: "Skickade en bild", time: "11:20", unread: 0, messages: [
+        { id: "a1", author: "Max Rubin", initials: "M", color: "#f9e2af", time: "11:10", text: "Hur gick det med vandringen?" },
+        { id: "a2", author: "Alex Andersson", initials: "A", color: "#89b4fa", time: "11:20", text: "Så fint väder också! 🏔️" }
+      ]},
+      { id: "gaming", name: "Spelkväll 🎮", username: "5 medlemmar", type: "group", color: "#a6e3a1", initials: "S", online: false, preview: "Du: Jag är på! 🎮", time: "Igår", unread: 0, members: ["Vera Holm", "Alex Andersson", "Elias Norén", "Maja Berg", "Max Rubin"], messages: [
+        { id: "g1", author: "Vera Holm", initials: "V", color: "#f38ba8", time: "20:05", text: "Spelkväll på fredag? 🍕" },
+        { id: "g2", author: "Max Rubin", initials: "M", color: "#f9e2af", time: "20:08", text: "Jag är på! 🎮" }
+      ]},
+      { id: "maja", name: "Maja Berg", username: "@majaberg", type: "dm", color: "#fab387", initials: "M", online: false, preview: "Tack för hjälpen 💛", time: "Igår", unread: 0, messages: [
+        { id: "m1", author: "Maja Berg", initials: "M", color: "#fab387", time: "Igår", text: "Tack för hjälpen 💛" }
+      ]}
+    ];
+
+    const emojis = ["❤️", "😂", "🔥", "👍", "✨", "🙌", "😍", "🥹", "🎉", "👀", "💜", "🤔", "👏", "🥰", "💯", "☕", "🌻", "🚀"];
+    const profile = loadProfile();
+    let currentUser = profile.name;
+    let chats = loadChats();
+    let selectedId = localStorage.getItem("maxchat-selected") || chats[0].id;
+    let selectedFiles = [];
+    let toastTimer;
+    const $ = (selector) => document.querySelector(selector);
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+    const activeChat = () => chats.find((chat) => chat.id === selectedId) || chats[0];
+    function loadProfile() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("maxchat-profile"));
+        return { name: typeof saved?.name === "string" && saved.name.trim() ? saved.name.trim() : "Max Rubin", about: typeof saved?.about === "string" ? saved.about : "", status: ["online", "away", "busy"].includes(saved?.status) ? saved.status : "online" };
+      } catch (error) {
+        console.warn("Kunde inte läsa sparad profil.", error);
+        return { name: "Max Rubin", about: "", status: "online" };
+      }
+    }
+    function profileInitials(name = currentUser) {
+      return name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase();
+    }
+    function renderProfile() {
+      const status = { online: { label: "● Aktiv nu", color: "text-mint", dot: "bg-mint" }, away: { label: "◷ Borta", color: "text-[#f9e2af]", dot: "bg-[#f9e2af]" }, busy: { label: "● Stör ej", color: "text-[#f38ba8]", dot: "bg-[#f38ba8]" } }[profile.status];
+      $("#profile-display-name").textContent = currentUser;
+      $("#profile-status-label").textContent = status.label;
+      $("#profile-status-label").className = `text-[11px] ${status.color}`;
+      $("#profile-avatar").textContent = profileInitials();
+      $("#profile-avatar").nextElementSibling.className = `online-dot absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-panel ${status.dot}`;
+      $("#friends-count").textContent = chats.filter(chat => chat.type === "dm").length;
+    }
+    function renderFriendsList(filter = "") {
+      const needle = filter.trim().toLocaleLowerCase("sv");
+      const friends = chats.filter(chat => chat.type === "dm" && chat.name.toLocaleLowerCase("sv").includes(needle));
+      $("#friends-list").innerHTML = friends.length ? friends.map(friend => `
+        <div class="flex items-center gap-3 rounded-xl px-2.5 py-2.5 transition hover:bg-white/[.04]">
+          <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background:${escapeHtml(friend.color)};color:#242333">${escapeHtml(friend.initials)}</span>${friend.online ? '<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#1e1e2e] bg-mint"></i>' : ""}</span>
+          <span class="min-w-0 flex-1"><span class="block truncate text-xs font-semibold">${escapeHtml(friend.name)}</span><span class="mt-1 block text-[10px] ${friend.online ? "text-mint" : "text-muted/60"}">${friend.online ? "Aktiv nu" : "Offline"}</span></span>
+          <button type="button" data-message-friend="${escapeHtml(friend.id)}" class="rounded-lg bg-accent/10 px-2.5 py-2 text-[10px] font-semibold text-accent transition hover:bg-accent/20">Meddelande</button>
+        </div>`).join("") : '<p class="px-3 py-5 text-center text-xs text-muted/60">Inga vänner hittades.</p>';
+      document.querySelectorAll("[data-message-friend]").forEach(button => button.addEventListener("click", () => { closeFriendsModal(); selectChat(button.dataset.messageFriend); }));
+    }
+    function loadChats() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("maxchat-chats"));
+        return Array.isArray(saved) && saved.length ? saved : structuredClone(starterChats);
+      } catch (error) {
+        console.warn("Kunde inte läsa sparade konversationer.", error);
+        return structuredClone(starterChats);
+      }
+    }
+    function saveChats() {
+      try { localStorage.setItem("maxchat-chats", JSON.stringify(chats)); }
+      catch (error) { showToast("Kunde inte spara lokalt. Lagringsutrymmet kan vara fullt."); console.error("Kunde inte spara konversationer.", error); }
+    }
+    function showToast(message) {
+      const toast = $("#toast"); toast.textContent = message;
+      toast.classList.remove("opacity-0", "translate-y-3"); toast.classList.add("opacity-100", "translate-y-0");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.classList.add("opacity-0", "translate-y-3"); toast.classList.remove("opacity-100", "translate-y-0"); }, 2400);
+    }
+    function renderChatList(filter = "") {
+      const needle = filter.trim().toLocaleLowerCase("sv");
+      const filtered = chats.filter((chat) => chat.name.toLocaleLowerCase("sv").includes(needle));
+      $("#chat-list").innerHTML = filtered.length ? filtered.map((chat) => `
+        <button data-chat-id="${escapeHtml(chat.id)}" class="chat-row flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition hover:bg-white/[.05] ${chat.id === selectedId ? "chat-active" : ""}">
+          <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background:${escapeHtml(chat.color)};color:#242333">${escapeHtml(chat.initials)}</span>${chat.online ? '<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-panel bg-mint"></i>' : ""}</span>
+          <span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="truncate text-[12px] font-semibold ${chat.unread ? "text-white" : "text-slate-300"}">${escapeHtml(chat.name)}</span><time class="shrink-0 text-[9px] text-muted/60">${escapeHtml(chat.time)}</time></span><span class="mt-1 flex items-center justify-between gap-2"><span class="truncate text-[10px] text-muted/65">${escapeHtml(chat.preview || "Börja en konversation")}</span>${chat.unread ? `<span class="grid h-[17px] min-w-[17px] place-items-center rounded-full bg-accent px-1 text-[9px] font-bold text-[#211a2c]">${chat.unread}</span>` : ""}</span></span>
+        </button>`).join("") : '<p class="px-3 py-5 text-center text-xs text-muted/60">Inga konversationer hittades.</p>';
+      document.querySelectorAll(".chat-row").forEach((button) => button.addEventListener("click", () => selectChat(button.dataset.chatId)));
+    }
+    function selectChat(id) {
+      selectedId = id;
+      const chat = activeChat(); chat.unread = 0;
+      localStorage.setItem("maxchat-selected", id);
+      renderChatList($("#chat-search").value); renderConversation(); renderDetails();
+      $("#sidebar").classList.add("mobile-hidden"); $("#chat-area").classList.remove("mobile-hidden");
+    }
+    function renderConversation() {
+      const chat = activeChat();
+      $("#chat-title").textContent = chat.name;
+      $("#chat-subtitle").textContent = chat.type === "group" ? `${(chat.members || []).length || 1} medlemmar` : chat.online ? "● Aktiv nu" : "Senast aktiv nyligen";
+      $("#chat-subtitle").className = `mt-0.5 text-[11px] ${chat.online ? "text-mint" : "text-muted"}`;
+      setAvatar($("#chat-header-avatar"), chat);
+      const items = chat.messages || [];
+      let previousAuthor = "";
+      $("#message-list").innerHTML = `<div class="mx-auto mb-7 max-w-4xl text-center"><span class="inline-flex items-center gap-2 rounded-full border border-white/[.07] bg-panel/70 px-3 py-1.5 text-[10px] text-muted/70">✦ &nbsp; Här börjar er konversation</span></div>` + items.map((message, index) => {
+        const sameAuthor = previousAuthor === message.author;
+        const showDate = index === 0;
+        previousAuthor = message.author;
+        const avatar = `<span class="avatar h-9 w-9 rounded-[13px] text-xs" style="background:${escapeHtml(message.color || "#cba6f7")};color:#242333">${escapeHtml(message.initials || message.author[0])}</span>`;
+        const fileMarkup = message.files?.length ? `<div class="mt-2 space-y-1.5">${message.files.map(file => `<div class="flex max-w-sm items-center gap-3 rounded-xl border border-white/[.08] bg-panel/80 px-3 py-2.5"><span class="grid h-8 w-8 place-items-center rounded-lg bg-accent/10 text-accent">↗</span><span class="min-w-0"><span class="block truncate text-xs font-semibold">${escapeHtml(file.name)}</span><span class="text-[10px] text-muted/65">${escapeHtml(file.size)}</span></span></div>`).join("")}</div>` : "";
+        const reactions = message.reactions ? `<div class="mt-2 flex flex-wrap gap-1.5">${Object.entries(message.reactions).filter(([, users]) => users.length).map(([emoji, users]) => `<button data-reaction="${escapeHtml(emoji)}" data-message-id="${escapeHtml(message.id)}" class="reaction flex items-center gap-1 rounded-full border ${users.includes(currentUser) ? "border-accent/40 bg-accent/15 text-accent" : "border-white/10 bg-panel text-muted"} px-2 py-1 text-[11px] transition hover:border-accent/40">${emoji}<span>${users.length}</span></button>`).join("")}</div>` : "";
+        return `${showDate ? '<div class="mb-6 flex items-center gap-3"><span class="h-px flex-1 bg-white/[.06]"></span><span class="text-[9px] font-bold uppercase tracking-[.15em] text-muted/45">Idag</span><span class="h-px flex-1 bg-white/[.06]"></span></div>' : ""}
+        <article class="message group relative flex gap-3 rounded-xl px-2 py-1.5 transition hover:bg-white/[.018] ${sameAuthor ? "mt-0.5" : "mt-4"}" data-text="${escapeHtml(message.text || "")}">
+          <div class="w-9 shrink-0">${sameAuthor ? "" : avatar}</div>
+          <div class="min-w-0 flex-1"><div class="flex items-baseline gap-2">${sameAuthor ? "" : `<span class="text-[12px] font-bold" style="color:${escapeHtml(message.color || "#cba6f7")}">${escapeHtml(message.author)}</span>`}<time class="text-[9px] text-muted/45">${escapeHtml(message.time || "")}</time></div>${message.text ? `<p class="message-body mt-1 text-[13px] leading-[1.65] text-slate-300">${escapeHtml(message.text)}</p>` : ""}${fileMarkup}${reactions}</div>
+          <div class="absolute right-2 top-0 hidden -translate-y-1/2 items-center rounded-lg border border-white/10 bg-[#29283a] p-1 shadow-xl group-hover:flex"><button class="react-message rounded-md px-2 py-1 text-[12px] hover:bg-white/10" data-message-id="${escapeHtml(message.id)}" title="Lägg till reaktion">😊</button></div>
+        </article>`;
+      }).join("");
+      document.querySelectorAll(".reaction").forEach(button => button.addEventListener("click", () => toggleReaction(button.dataset.messageId, button.dataset.reaction)));
+      document.querySelectorAll(".react-message").forEach(button => button.addEventListener("click", () => openQuickReactions(button.dataset.messageId)));
+      $("#message-list").scrollTop = $("#message-list").scrollHeight;
+      saveChats();
+    }
+    function setAvatar(element, chat) {
+      element.textContent = chat.initials || chat.name[0];
+      element.style.backgroundColor = chat.color || "#cba6f7";
+      element.style.color = "#242333";
+    }
+    function renderDetails() {
+      const chat = activeChat();
+      $("#details-title").textContent = chat.name;
+      $("#details-username").textContent = chat.username || `${(chat.members || []).length} medlemmar`;
+      setAvatar($("#details-avatar"), chat);
+      const files = (chat.messages || []).flatMap(message => message.files || []).slice(-4).reverse();
+      $("#shared-files").innerHTML = files.length ? files.map(file => `<div class="flex min-w-0 items-center gap-2 rounded-lg bg-ink/50 p-2"><span class="text-accent">↗</span><span class="truncate text-[10px] text-slate-300">${escapeHtml(file.name)}</span></div>`).join("") : '<p class="text-[11px] text-muted/50">Inga delade filer ännu.</p>';
+    }
+    function toggleReaction(messageId, emoji) {
+      const message = activeChat().messages.find(item => item.id === messageId);
+      if (!message) return;
+      message.reactions ||= {};
+      message.reactions[emoji] ||= [];
+      const users = message.reactions[emoji];
+      const existing = users.indexOf(currentUser);
+      if (existing >= 0) users.splice(existing, 1); else users.push(currentUser);
+      renderConversation();
+    }
+    function openQuickReactions(messageId) {
+      const picker = $("#emoji-picker");
+      picker.classList.remove("hidden");
+      $("#emoji-grid").innerHTML = emojis.slice(0, 12).map(emoji => `<button type="button" class="rounded-lg p-1.5 text-lg transition hover:bg-white/10" data-quick-emoji="${emoji}">${emoji}</button>`).join("");
+      document.querySelectorAll("[data-quick-emoji]").forEach(button => button.addEventListener("click", () => { toggleReaction(messageId, button.dataset.quickEmoji); picker.classList.add("hidden"); renderEmojiGrid(); }));
+    }
+    function renderEmojiGrid() {
+      $("#emoji-grid").innerHTML = emojis.map(emoji => `<button type="button" class="rounded-lg p-1.5 text-lg transition hover:bg-white/10" data-emoji="${emoji}">${emoji}</button>`).join("");
+    }
+    function sendMessage(text, files = []) {
+      const chat = activeChat();
+      const message = { id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, author: currentUser, initials: profileInitials(), color: "#f9e2af", time: new Date().toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }), text, files };
+      chat.messages.push(message);
+      chat.preview = text || `📎 ${files[0]?.name || "Fil"}`;
+      chat.time = "nu";
+      chats = [chat, ...chats.filter(item => item.id !== chat.id)];
+      renderChatList($("#chat-search").value); renderConversation(); renderDetails();
+    }
+    $("#message-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const input = $("#message-input");
+      const text = input.value.trim();
+      if (!text && !selectedFiles.length) return;
+      sendMessage(text, selectedFiles.map(file => ({ name: file.name, size: formatSize(file.size) })));
+      input.value = ""; input.style.height = "40px"; selectedFiles = []; $("#file-input").value = ""; renderAttachments();
+      $("#emoji-picker").classList.add("hidden");
+    });
+    $("#message-input").addEventListener("keydown", event => {
+      if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); $("#message-form").requestSubmit(); }
+    });
+    $("#message-input").addEventListener("input", event => { event.target.style.height = "40px"; event.target.style.height = `${Math.min(event.target.scrollHeight, 128)}px`; });
+    function formatSize(size) { return size < 1024 * 1024 ? `${Math.max(1, Math.round(size / 1024))} KB` : `${(size / (1024 * 1024)).toFixed(1)} MB`; }
+    $("#file-input").addEventListener("change", event => {
+      selectedFiles = [...selectedFiles, ...event.target.files];
+      renderAttachments();
+      event.target.value = "";
+    });
+    function renderAttachments() {
+      const preview = $("#attachment-preview");
+      preview.classList.toggle("hidden", selectedFiles.length === 0);
+      preview.innerHTML = selectedFiles.map((file, index) => `<span class="mb-1 mr-1 inline-flex max-w-full items-center gap-2 rounded-lg bg-ink px-2.5 py-1.5 text-[11px]"><span class="truncate">${escapeHtml(file.name)}</span><span class="shrink-0 text-muted/60">${formatSize(file.size)}</span><button type="button" class="remove-file ml-1 text-muted hover:text-[#f38ba8]" data-file-index="${index}" aria-label="Ta bort ${escapeHtml(file.name)}">×</button></span>`).join("");
+      document.querySelectorAll(".remove-file").forEach(button => button.addEventListener("click", () => { selectedFiles.splice(Number(button.dataset.fileIndex), 1); renderAttachments(); }));
+    }
+    renderEmojiGrid();
+    $("#emoji-grid").addEventListener("click", event => {
+      const button = event.target.closest("[data-emoji]");
+      if (button) { const input = $("#message-input"); input.value += button.dataset.emoji; input.focus(); }
+    });
+    $("#emoji-button").addEventListener("click", () => { renderEmojiGrid(); $("#emoji-picker").classList.toggle("hidden"); });
+    $("#chat-search").addEventListener("input", event => renderChatList(event.target.value));
+    $("#message-search").addEventListener("input", event => {
+      const term = event.target.value.toLocaleLowerCase("sv");
+      document.querySelectorAll(".message").forEach(message => { message.classList.toggle("hidden", term.length > 0 && !message.dataset.text.toLocaleLowerCase("sv").includes(term)); });
+    });
+    $("#new-chat").addEventListener("click", openGroupModal);
+    $("#new-chat-small").addEventListener("click", openGroupModal);
+    function openGroupModal() { $("#group-modal").classList.remove("hidden"); $("#group-modal").classList.add("flex"); $("#group-name").focus(); }
+    function closeGroupModal() { $("#group-modal").classList.add("hidden"); $("#group-modal").classList.remove("flex"); }
+    $("#close-modal").addEventListener("click", closeGroupModal);
+    $("#group-modal").addEventListener("click", event => { if (event.target === $("#group-modal")) closeGroupModal(); });
+    $("#group-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const name = $("#group-name").value.trim();
+      if (!name) return;
+      const members = $("#group-members").value.split(",").map(value => value.trim()).filter(Boolean);
+      const group = { id: `group-${Date.now()}`, name, username: `${members.length + 1} medlemmar`, type: "group", color: "#cba6f7", initials: name.slice(0, 1).toUpperCase(), online: false, preview: "Gruppen skapades", time: "nu", unread: 0, members: [...members, currentUser], messages: [{ id: `welcome-${Date.now()}`, author: currentUser, initials: profileInitials(), color: "#f9e2af", time: "nu", text: `Välkommen till ${name}! 🎉` }] };
+      chats.unshift(group); saveChats(); closeGroupModal(); $("#group-form").reset(); selectChat(group.id); showToast("Gruppen skapades!");
+    });
+    $("#mobile-back").addEventListener("click", () => { $("#chat-area").classList.add("mobile-hidden"); $("#sidebar").classList.remove("mobile-hidden"); });
+    $("#header-details").addEventListener("click", () => { $("#details").classList.toggle("mobile-hidden"); $("#details").classList.toggle("flex"); });
+    $("#close-details").addEventListener("click", () => { $("#details").classList.add("mobile-hidden"); $("#details").classList.remove("flex"); });
+    $("#clear-chat").addEventListener("click", () => {
+      if (!confirm("Vill du rensa alla meddelanden i den här konversationen?")) return;
+      activeChat().messages = []; activeChat().preview = "Börja en konversation"; saveChats(); renderConversation(); renderDetails(); showToast("Konversationen har rensats.");
+    });
+    function openFriendsModal() { renderFriendsList($("#friends-search").value); $("#friends-modal").classList.remove("hidden"); $("#friends-modal").classList.add("flex"); $("#friend-name").focus(); }
+    function closeFriendsModal() { $("#friends-modal").classList.add("hidden"); $("#friends-modal").classList.remove("flex"); }
+    function openProfileModal() {
+      $("#profile-name-input").value = currentUser;
+      $("#profile-about-input").value = profile.about;
+      $("#profile-status-input").value = profile.status;
+      $("#profile-modal").classList.remove("hidden"); $("#profile-modal").classList.add("flex"); $("#profile-name-input").focus();
+    }
+    function closeProfileModal() { $("#profile-modal").classList.add("hidden"); $("#profile-modal").classList.remove("flex"); }
+    $("#friends-button").addEventListener("click", openFriendsModal);
+    $("#close-friends-modal").addEventListener("click", closeFriendsModal);
+    $("#friends-modal").addEventListener("click", event => { if (event.target === $("#friends-modal")) closeFriendsModal(); });
+    $("#friends-search").addEventListener("input", event => renderFriendsList(event.target.value));
+    $("#add-friend-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const name = $("#friend-name").value.trim();
+      if (!name) return;
+      const duplicate = chats.find(chat => chat.type === "dm" && chat.name.toLocaleLowerCase("sv") === name.toLocaleLowerCase("sv"));
+      if (duplicate) { $("#friend-name").value = ""; renderFriendsList($("#friends-search").value); showToast("Den personen finns redan i din vänlista."); return; }
+      const id = `friend-${Date.now()}`;
+      const friend = { id, name, username: `@${name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("sv").replace(/[^a-z0-9]+/g, "")}`, type: "dm", color: ["#89b4fa", "#f5c2e7", "#fab387", "#a6e3a1", "#cba6f7"][chats.filter(chat => chat.type === "dm").length % 5], initials: name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase(), online: false, preview: "Börja en konversation", time: "nu", unread: 0, messages: [] };
+      chats.unshift(friend); saveChats(); renderChatList($("#chat-search").value); renderProfile(); renderFriendsList($("#friends-search").value); $("#friend-name").value = "";
+      showToast(`${name} lades till i din vänlista.`);
+    });
+    $("#profile-button").addEventListener("click", openProfileModal);
+    $("#close-profile-modal").addEventListener("click", closeProfileModal);
+    $("#profile-modal").addEventListener("click", event => { if (event.target === $("#profile-modal")) closeProfileModal(); });
+    $("#profile-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const name = $("#profile-name-input").value.trim();
+      if (!name) return;
+      const nextProfile = { name, about: $("#profile-about-input").value.trim(), status: $("#profile-status-input").value };
+      try { localStorage.setItem("maxchat-profile", JSON.stringify(nextProfile)); }
+      catch (error) { showToast("Kunde inte spara profilinställningarna."); console.error("Kunde inte spara profilinställningarna.", error); return; }
+      const previousName = currentUser;
+      if (previousName !== name) {
+        chats.forEach(chat => {
+          chat.members = chat.members?.map(member => member === previousName ? name : member);
+          chat.messages?.forEach(message => {
+            if (message.author === previousName) { message.author = name; message.initials = profileInitials(name); }
+            Object.values(message.reactions || {}).forEach(users => {
+              const index = users.indexOf(previousName);
+              if (index >= 0) users[index] = name;
+            });
+          });
+        });
+      }
+      Object.assign(profile, nextProfile); currentUser = profile.name; renderProfile(); closeProfileModal(); showToast("Profilen har uppdaterats.");
+      if (previousName !== name) { saveChats(); renderChatList($("#chat-search").value); renderConversation(); renderDetails(); }
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") { closeGroupModal(); closeFriendsModal(); closeProfileModal(); $("#emoji-picker").classList.add("hidden"); renderEmojiGrid(); }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); $("#message-search").focus(); }
+    });
+    renderChatList();
+    renderConversation();
+    renderDetails();
+    renderProfile();
+  </script>
+</body>
+</html>
