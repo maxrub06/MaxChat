@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="tile" x1="7" y1="5" x2="57" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D8B4FE"/>
+      <stop offset="1" stop-color="#89B4FA"/>
+    </linearGradient>
+    <linearGradient id="bubble" x1="16" y1="15" x2="49" y2="46" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#29263A"/>
+      <stop offset="1" stop-color="#181825"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="20" fill="url(#tile)"/>
+  <path d="M17 25.5C17 19.149 22.149 14 28.5 14h10C44.851 14 50 19.149 50 25.5v7C50 38.851 44.851 44 38.5 44H31l-9.5 6v-8.3A13.45 13.45 0 0 1 17 32.5v-7Z" fill="url(#bubble)"/>
+  <path d="m25 33 4-7 4 7 4-7 4 7" stroke="#D8B4FE" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2"/>
+</svg>
