@@ -40,6 +40,7 @@
     .nav-active { background: #302748; color: #e6d9ff; }
     .chat-active { background: #29263a; }
     .modal-backdrop { background: rgb(7 7 15 / 75%); backdrop-filter: blur(7px); }
+    .emoji-picker { bottom: calc(100% + 16px); right: calc(100% + 8px); }
     .pop-in { animation: pop-in .16s ease-out; }
     @keyframes pop-in { from { opacity: 0; transform: translateY(5px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @media (max-width: 767px) {
@@ -134,7 +135,7 @@
             <button type="button" id="emoji-button" aria-label="Välj emoji" title="Välj emoji" class="grid h-10 w-9 place-items-center rounded-xl text-muted transition hover:bg-white/[.07] hover:text-[#f9e2af]">
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
             </button>
-            <div id="emoji-picker" class="absolute bottom-12 right-0 z-10 hidden w-56 rounded-2xl border border-white/10 bg-[#242435] p-3 shadow-2xl">
+            <div id="emoji-picker" class="emoji-picker absolute z-10 hidden w-56 rounded-2xl border border-white/10 bg-[#242435] p-3 shadow-2xl">
               <p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Reaktioner</p>
               <div id="emoji-grid" class="grid grid-cols-6 gap-1"></div>
             </div>
@@ -147,13 +148,14 @@
     </section>
 
     <aside id="details" class="mobile-hidden hidden w-[270px] shrink-0 border-l border-white/[.06] bg-panel lg:flex lg:flex-col">
-      <div class="flex h-[72px] items-center justify-between border-b border-white/[.06] px-5"><h2 class="text-xs font-bold">Konversationsinfo</h2><button id="close-details" aria-label="Stäng detaljer" class="rounded-lg p-1.5 text-muted hover:bg-white/10 hover:text-white lg:hidden">✕</button></div>
-      <div class="scrollbar-none overflow-y-auto px-5">
+      <div class="scrollbar-none min-h-0 flex-1 overflow-y-auto px-5">
+        <div class="flex min-h-full flex-col justify-center">
+        <div class="-mx-5 flex h-[72px] shrink-0 items-center justify-between border-b border-white/[.06] px-5"><h2 class="text-xs font-bold">Konversationsinfo</h2><button id="close-details" aria-label="Stäng detaljer" class="rounded-lg p-1.5 text-muted hover:bg-white/10 hover:text-white lg:hidden">✕</button></div>
         <div class="flex flex-col items-center border-b border-white/[.06] py-7 text-center">
           <button id="details-avatar" type="button" class="avatar h-[76px] w-[76px] rounded-[26px] bg-[#f5c2e7] text-2xl text-[#342538]">S</button>
           <h3 id="details-title" class="mt-4 text-base font-bold">Sofia Lind</h3>
           <p id="details-username" class="mt-1 text-xs text-muted">@sofialind</p>
-          <p class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint"><span class="h-1.5 w-1.5 rounded-full bg-mint"></span>Aktiv nu</p>
+          <p id="details-status" class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint"><span class="h-1.5 w-1.5 rounded-full bg-mint"></span>Aktiv nu</p>
         </div>
         <div id="group-members-section" class="hidden border-b border-white/[.06] py-5">
           <h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Medlemmar</h4>
@@ -161,13 +163,18 @@
           <button id="add-group-member" type="button" class="mt-3 w-full rounded-lg border border-white/10 px-3 py-2 text-left text-xs font-semibold text-accent transition hover:bg-accent/10">+ Lägg till medlem</button>
         </div>
         <div class="border-b border-white/[.06] py-5"><h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Delade filer</h4><div id="shared-files" class="space-y-2"></div></div>
-        <button id="clear-chat" class="mt-5 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-medium text-[#f38ba8] transition hover:bg-[#f38ba8]/10">
+        <button id="clear-chat" class="mb-5 mt-5 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-medium text-[#f38ba8] transition hover:bg-[#f38ba8]/10">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18m-2 0-1 14H6L5 6m4 0V4h6v2m-5 5v5m4-5v5"/></svg>Rensa konversation
         </button>
+        </div>
       </div>
     </aside>
   </main>
 
+  <div id="image-preview-modal" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Förstorad bild">
+    <button id="close-image-preview" type="button" aria-label="Stäng bildvisning" class="absolute right-4 top-4 z-10 rounded-full bg-black/50 px-3 py-2 text-xl text-white transition hover:bg-black/70">×</button>
+    <img id="image-preview" alt="" class="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-2xl">
+  </div>
   <div id="group-modal" class="modal-backdrop fixed inset-0 z-30 hidden items-center justify-center p-4">
     <section role="dialog" aria-modal="true" aria-labelledby="modal-title" class="pop-in w-full max-w-md rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 shadow-2xl">
       <div class="mb-6 flex items-start justify-between"><div><p class="text-[10px] font-bold uppercase tracking-[.17em] text-accent">Något nytt börjar här</p><h2 id="modal-title" class="mt-2 text-xl font-bold">Skapa en grupp</h2><p class="mt-1 text-xs text-muted">Samla dina favoritmänniskor på ett ställe.</p></div><button id="close-modal" aria-label="Stäng" class="rounded-lg p-2 text-muted hover:bg-white/10 hover:text-white">✕</button></div>
@@ -247,8 +254,15 @@
         <button id="decline-call" type="button" class="rounded-xl bg-[#f38ba8] px-5 py-3 text-sm font-bold text-[#2b1721]">Avvisa</button>
         <button id="accept-call" type="button" class="rounded-xl bg-mint px-5 py-3 text-sm font-bold text-[#172718]">Svara</button>
       </div>
-      <div id="active-call-actions" class="mt-6 hidden justify-center gap-3">
-        <button id="mute-call" type="button" class="rounded-xl border border-white/10 bg-white/[.06] px-4 py-3 text-sm font-semibold text-white">Stäng av mikrofon</button>
+      <div id="active-call-actions" class="mt-6 hidden items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <button id="mute-audio-call" type="button" aria-label="Stäng av samtalsljud" title="Stäng av samtalsljud" aria-pressed="false" class="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[.06] text-white transition hover:bg-white/10">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7m3-10a9 9 0 0 1 0 13"/></svg>
+          </button>
+          <button id="mute-call" type="button" aria-label="Stäng av mikrofon" title="Stäng av mikrofon" aria-pressed="false" class="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[.06] text-white transition hover:bg-white/10">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-4 0h8"/></svg>
+          </button>
+        </div>
         <button id="end-call" type="button" class="rounded-xl bg-[#f38ba8] px-5 py-3 text-sm font-bold text-[#2b1721]">Avsluta</button>
       </div>
     </section>
@@ -291,14 +305,19 @@
     let profileAvatarDraft = profile.avatar || "";
     let selectedId = localStorage.getItem("maxchat-selected") || chats[0]?.id || "";
     let selectedFiles = [];
+    let bottomScrollRequest = 0;
+    let bottomScrollObserver = null;
     let editingMessageId = "";
     let activeMessageActionsId = "";
     let pendingGroupConfirmation = null;
     let toastTimer;
     let chatTimeRefreshTimer;
     let signalSocket = null;
+    let signalingReady = false;
     let signalRetryTimer = null;
     let callState = null;
+    let callToneContext = null;
+    let callToneTimer = null;
     const $ = (selector) => document.querySelector(selector);
     const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
     const activeChat = () => chats.find((chat) => chat.id === selectedId) || chats[0] || null;
@@ -382,11 +401,60 @@
       }
       return `<span class="avatar h-9 w-9 rounded-[13px] text-xs" style="background:${escapeHtml(message.color || "#cba6f7")};color:#242333">${escapeHtml(message.initials || message.author[0])}</span>`;
     }
+    function memberActivityStatus(name) {
+      if (name === currentUser) {
+        return {
+          online: { label: "Aktiv nu", dot: "bg-mint" },
+          away: { label: "Borta", dot: "bg-[#f9e2af]" },
+          busy: { label: "Stör ej", dot: "bg-[#c94f73]" },
+          offline: { label: "Offline", dot: "bg-muted/50" }
+        }[profile.status] || { label: "Offline", dot: "bg-muted/50" };
+      }
+      const directChat = chats.find(chat => chat.type === "dm" && chat.name.toLocaleLowerCase("sv") === name.toLocaleLowerCase("sv"));
+      const status = directChat?.status;
+      const currentStatus = status || (directChat?.online ? "online" : "offline");
+      return {
+        online: { label: "Aktiv nu", dot: "bg-mint" },
+        away: { label: "Borta", dot: "bg-[#f9e2af]" },
+        busy: { label: "Stör ej", dot: "bg-[#c94f73]" },
+        offline: { label: "Offline", dot: "bg-muted/50" }
+      }[currentStatus] || { label: "Offline", dot: "bg-muted/50" };
+    }
+    function memberIsActive(name) {
+      return memberActivityStatus(name).label !== "Offline";
+    }
+    function memberAvatarMarkup(chat, name) {
+      const directChat = chats.find(item => item.type === "dm" && item.name.toLocaleLowerCase("sv") === name.toLocaleLowerCase("sv"));
+      const message = (chat.messages || []).find(item => item.author === name && typeof item.avatar === "string" && item.avatar.startsWith("data:image/"));
+      const directMessage = (directChat?.messages || []).find(item => item.author === name && typeof item.avatar === "string" && item.avatar.startsWith("data:image/"));
+      const avatar = name === currentUser
+        ? profile.avatar
+        : chat.memberAvatars?.[name] || directChat?.avatar || directChat?.profileAvatar || message?.avatar || directMessage?.avatar || "";
+      if (typeof avatar === "string" && avatar.startsWith("data:image/")) {
+        return `<span class="avatar h-7 w-7 rounded-lg bg-cover bg-center text-[10px]" role="img" aria-label="${escapeHtml(name)}s profilbild" style="background-image:url('${escapeHtml(avatar)}')"></span>`;
+      }
+      return `<span class="avatar h-7 w-7 rounded-lg text-[10px]" style="background:#cba6f7;color:#242333">${escapeHtml(profileInitials(name))}</span>`;
+    }
+    function renderDetailsStatus(chat) {
+      const status = $("#details-status");
+      const label = status.firstElementChild;
+      if (chat.type === "group") {
+        const members = [...new Set(chat.members || [])];
+        const activeCount = members.filter(memberIsActive).length;
+        status.className = "mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint";
+        label.className = "h-1.5 w-1.5 rounded-full bg-mint";
+        status.lastChild.textContent = `${activeCount} av ${members.length} aktiva`;
+        return;
+      }
+      status.className = "mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint";
+      label.className = "h-1.5 w-1.5 rounded-full bg-mint";
+      status.lastChild.textContent = "Aktiv nu";
+    }
     function renderProfile() {
       const status = {
         online: { label: "Aktiv nu", dot: "bg-mint" },
         away: { label: "Borta", dot: "bg-[#f9e2af]" },
-        busy: { label: "Stör ej", dot: "bg-[#f38ba8]" }
+        busy: { label: "Stör ej", dot: "bg-[#c94f73]" }
       }[profile.status];
       $("#profile-display-name").textContent = currentUser;
       $("#profile-status-label").textContent = status.label;
@@ -457,7 +525,10 @@
       if (!["http:", "https:"].includes(location.protocol)) return;
       const protocol = location.protocol === "https:" ? "wss:" : "ws:";
       signalSocket = new WebSocket(`${protocol}//${location.host}/signal`);
-      signalSocket.addEventListener("open", () => signalSocket.send(JSON.stringify({ type: "register", name: currentUser })));
+      signalSocket.addEventListener("open", () => {
+        signalingReady = false;
+        signalSocket.send(JSON.stringify({ type: "register", name: currentUser }));
+      });
       signalSocket.addEventListener("message", event => {
         let message;
         try { message = JSON.parse(event.data); }
@@ -471,26 +542,116 @@
         if (callState) $("#call-status").textContent = "Anslutningen till samtalsservern avbröts.";
       });
       signalSocket.addEventListener("close", () => {
+        signalingReady = false;
         if (callState) finishCall(false, "Anslutningen till samtalsservern avbröts.");
         clearTimeout(signalRetryTimer);
         signalRetryTimer = setTimeout(connectSignaling, 3000);
       });
+    }
+    function playCallTone() {
+      if (!callToneContext || callToneContext.state !== "running") return;
+      const startAt = callToneContext.currentTime + 0.02;
+      [0, 0.62].forEach(offset => {
+        const gain = callToneContext.createGain();
+        gain.gain.setValueAtTime(0.0001, startAt + offset);
+        gain.gain.exponentialRampToValueAtTime(0.04, startAt + offset + 0.025);
+        gain.gain.setValueAtTime(0.04, startAt + offset + 0.38);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + offset + 0.46);
+        gain.connect(callToneContext.destination);
+        [440, 480].forEach(frequency => {
+          const oscillator = callToneContext.createOscillator();
+          oscillator.type = "sine";
+          oscillator.frequency.value = frequency;
+          oscillator.connect(gain);
+          oscillator.start(startAt + offset);
+          oscillator.stop(startAt + offset + 0.48);
+        });
+      });
+    }
+    function startCallTone(context) {
+      stopCallTone();
+      if (!context) return;
+      callToneContext = context;
+      context.resume().then(() => {
+        if (callToneContext !== context || context.state !== "running" || callToneTimer !== null) return;
+        playCallTone();
+        callToneTimer = setInterval(playCallTone, 3500);
+      }).catch(error => console.warn("Uppringningsljudet kunde inte starta.", error));
+    }
+    function stopCallTone() {
+      clearInterval(callToneTimer);
+      callToneTimer = null;
+      const context = callToneContext;
+      callToneContext = null;
+      if (context && context.state !== "closed") context.close().catch(error => console.warn("Kunde inte stänga uppringningsljudet.", error));
+    }
+    function callChatForPeer(name) {
+      const selectedChat = activeChat();
+      const matchesChat = chat => chat?.type === "dm"
+        ? chat.name.toLocaleLowerCase("sv") === name.toLocaleLowerCase("sv")
+        : chat?.type === "group" && chat.members?.includes(currentUser) && chat.members.includes(name);
+      return matchesChat(selectedChat) ? selectedChat : chats.find(matchesChat) || selectedChat;
+    }
+    function setCallAvatar(chat, peerName = "") {
+      const avatar = $("#call-avatar");
+      const directChat = chat?.type === "dm" ? chat : chats.find(item => item.type === "dm" && item.name.toLocaleLowerCase("sv") === peerName.toLocaleLowerCase("sv"));
+      const peerMessage = directChat?.messages?.find(message => message.author === peerName && typeof message.avatar === "string" && message.avatar.startsWith("data:image/"));
+      const image = chat?.type === "group" ? chat.logo : directChat?.avatar || directChat?.profileAvatar || peerMessage?.avatar || "";
+      avatar.textContent = image ? "" : chat?.type === "group" ? chat.initials || chat.name[0] : profileInitials(peerName || chat?.name || "?");
+      avatar.style.backgroundColor = chat?.color || "#cba6f7";
+      avatar.style.backgroundImage = image ? `url("${image}")` : "";
+      avatar.style.backgroundPosition = "center";
+      avatar.style.backgroundSize = "cover";
+      avatar.style.color = "#242333";
+    }
+    function resetCallControls() {
+      for (const [selector, label] of [["#mute-audio-call", "Stäng av samtalsljud"], ["#mute-call", "Stäng av mikrofon"]]) {
+        const button = $(selector);
+        button.setAttribute("aria-label", label);
+        button.title = label;
+        button.setAttribute("aria-pressed", "false");
+        button.classList.remove("border-[#c94f73]", "bg-[#c94f73]", "text-white");
+        button.classList.add("border-white/10", "bg-white/[.06]");
+      }
     }
     function sendCallSignal(type, peerId, callId = callState?.id, payload = {}) {
       if (!signalSocket || signalSocket.readyState !== WebSocket.OPEN) return false;
       signalSocket.send(JSON.stringify({ type, to: peerId, callId, ...payload }));
       return true;
     }
-    function showCallModal(title, status, initials = "?") {
+    function showCallModal(title, status, initials = "?", chat = activeChat(), peerName = "") {
       $("#call-title").textContent = title;
       $("#call-status").textContent = status;
-      $("#call-avatar").textContent = initials;
+      setCallAvatar(chat, peerName || initials);
+      resetCallControls();
+      $("#mute-audio-call").classList.remove("hidden");
+      $("#mute-call").classList.remove("hidden");
+      $("#end-call").textContent = "Avsluta";
       $("#incoming-call-actions").classList.add("hidden");
       $("#incoming-call-actions").classList.remove("flex");
       $("#active-call-actions").classList.add("hidden");
       $("#active-call-actions").classList.remove("flex");
       $("#call-modal").classList.remove("hidden");
       $("#call-modal").classList.add("flex");
+    }
+    function showCallError(message) {
+      $("#call-status").textContent = message;
+      $("#mute-audio-call").classList.add("hidden");
+      $("#mute-call").classList.add("hidden");
+      $("#active-call-actions").classList.remove("hidden");
+      $("#active-call-actions").classList.add("flex");
+      $("#end-call").textContent = "Stäng";
+    }
+    function waitForSignaling(timeout = 5000) {
+      return new Promise(resolve => {
+        const deadline = Date.now() + timeout;
+        const check = () => {
+          if (signalingReady && signalSocket?.readyState === WebSocket.OPEN) { resolve(true); return; }
+          if (Date.now() >= deadline || !["http:", "https:"].includes(location.protocol)) { resolve(false); return; }
+          setTimeout(check, 100);
+        };
+        check();
+      });
     }
     function updateCallStatus() {
       if (!callState) return;
@@ -500,41 +661,60 @@
       const names = peers.map(peer => peer.name).join(", ");
       $("#call-title").textContent = names || "Samtal";
       $("#call-status").textContent = connected ? `Pågående samtal · ${connected + 1} deltagare` : pending ? "Ansluter…" : "Väntar på svar…";
-      $("#call-avatar").textContent = peers.length === 1 ? profileInitials(peers[0].name) : "☎";
+      setCallAvatar(callState.chat, peers.length === 1 ? peers[0].name : "");
       $("#incoming-call-actions").classList.add("hidden");
       $("#incoming-call-actions").classList.remove("flex");
       $("#active-call-actions").classList.remove("hidden");
       $("#active-call-actions").classList.add("flex");
     }
-    function startCall() {
+    async function startCall() {
       if (callState) { showToast("Ett samtal pågår redan."); return; }
-      if (!signalSocket || signalSocket.readyState !== WebSocket.OPEN) {
-        showToast(location.protocol === "file:" ? "Starta MaxChat-servern för att ringa." : "Ansluter till samtalsservern. Försök igen om en stund.");
+      const chat = activeChat();
+      if (!chat) { showToast("Välj en konversation innan du ringer."); return; }
+      showCallModal(chat.name, "Startar samtal…", profileInitials(chat.name));
+      if (!await waitForSignaling()) {
+        showCallError(location.protocol === "file:" ? "Starta MaxChat-servern för att ringa." : "Kunde inte ansluta till samtalsservern. Kontrollera anslutningen och försök igen.");
         return;
       }
       if (!navigator.mediaDevices?.getUserMedia || !window.RTCPeerConnection) {
-        showToast("Webbläsaren stöder inte röstsamtal. Använd HTTPS eller localhost.");
+        showCallError("Webbläsaren stöder inte röstsamtal. Använd HTTPS eller localhost.");
         return;
       }
-      const chat = activeChat();
       const targets = chat.type === "group" ? [...new Set(chat.members || [])].filter(name => signalingPeerId(name) && signalingPeerId(name) !== signalingPeerId(currentUser)) : [chat.name];
-      if (!targets.length || targets.every(name => !signalingPeerId(name))) { showToast("Det finns ingen att ringa i den här konversationen."); return; }
-      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-        if (callState) { stream.getTracks().forEach(track => track.stop()); return; }
+      if (!targets.length || targets.every(name => !signalingPeerId(name))) { showCallError("Det finns ingen att ringa i den här konversationen."); return; }
+      const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+      let ringtoneContext = null;
+      if (AudioContextConstructor) {
+        try {
+          ringtoneContext = new AudioContextConstructor();
+          ringtoneContext.resume().catch(error => console.warn("Uppringningsljudet kunde inte starta.", error));
+        } catch (error) {
+          console.warn("Uppringningsljudet stöds inte i den här webbläsaren.", error);
+        }
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (callState) {
+          stream.getTracks().forEach(track => track.stop());
+          ringtoneContext?.close().catch(error => console.warn("Kunde inte stänga uppringningsljudet.", error));
+          return;
+        }
         const peers = new Map(targets.map(name => [signalingPeerId(name), { name, pc: null, status: "calling", pendingIce: [] }]));
-        callState = { id: crypto.randomUUID(), incoming: false, peers, stream };
-        showCallModal(targets.join(", "), "Ringer…", targets.length === 1 ? profileInitials(targets[0]) : "☎");
+        callState = { id: crypto.randomUUID(), incoming: false, peers, stream, chat, audioMuted: false, microphoneMuted: false };
+        showCallModal(targets.join(", "), "Ringer…", targets.length === 1 ? profileInitials(targets[0]) : "☎", chat, targets.length === 1 ? targets[0] : "");
         updateCallStatus();
         callState.timer = setTimeout(() => {
           if (callState && ![...callState.peers.values()].some(peer => peer.pc?.connectionState === "connected")) finishCall(true, "Inget svar. Samtalet avslutades.");
         }, 45000);
+        startCallTone(ringtoneContext);
         for (const [peerId, peer] of peers) {
           if (!sendCallSignal("call", peerId)) { finishCall(false, "Kunde inte skicka samtalsförfrågan."); return; }
         }
-      }).catch(error => {
+      } catch (error) {
+        ringtoneContext?.close().catch(closeError => console.warn("Kunde inte stänga uppringningsljudet.", closeError));
         console.error("Kunde inte komma åt mikrofonen.", error);
-        showToast(error.name === "NotAllowedError" ? "Tillåt mikrofonåtkomst för att ringa." : "Kunde inte starta mikrofonen.");
-      });
+        showCallError(error.name === "NotAllowedError" ? "Tillåt mikrofonåtkomst för att ringa." : "Kunde inte starta mikrofonen.");
+      }
     }
     function createPeerConnection(peerId, peer) {
       if (peer.pc) return peer.pc;
@@ -550,13 +730,17 @@
         audio.autoplay = true;
         audio.srcObject = event.streams[0];
         audio.dataset.peerId = peerId;
+        audio.muted = callState.audioMuted;
         $("#remote-audio").querySelector(`[data-peer-id="${CSS.escape(peerId)}"]`)?.remove();
         $("#remote-audio").append(audio);
         audio.play().catch(error => console.warn("Fjärrljud väntar på webbläsarens uppspelningsbehörighet.", error));
       });
       connection.addEventListener("connectionstatechange", () => {
         if (!callState) return;
-        if (connection.connectionState === "connected") peer.status = "connected";
+        if (connection.connectionState === "connected") {
+          peer.status = "connected";
+          if (!callState.incoming) stopCallTone();
+        }
         if (connection.connectionState === "failed" || connection.connectionState === "closed") {
           peer.status = "ended";
           if (![...callState.peers.values()].some(item => ["calling", "accepted", "connecting", "connected"].includes(item.status))) {
@@ -572,8 +756,16 @@
       while (peer.pc?.remoteDescription && peer.pendingIce.length) await peer.pc.addIceCandidate(peer.pendingIce.shift());
     }
     async function handleSignalMessage(message) {
-      if (message.type === "registered") return;
-      if (message.type === "error") { showToast(message.message || "Samtalsservern avvisade anslutningen."); return; }
+      if (message.type === "registered") {
+        signalingReady = true;
+        return;
+      }
+      if (message.type === "error") {
+        const errorMessage = message.message || "Samtalsservern avvisade anslutningen.";
+        if (callState) finishCall(false, errorMessage);
+        else showToast(errorMessage);
+        return;
+      }
       if (message.type === "unavailable") {
         if (callState?.id !== message.callId) return;
         const peer = callState.peers.get(message.to);
@@ -584,8 +776,14 @@
       }
       if (message.type === "call") {
         if (callState) { sendCallSignal("reject", message.from, message.callId); return; }
-        callState = { id: message.callId, incoming: true, name: message.fromName, peers: new Map([[message.from, { name: message.fromName, pc: null, status: "incoming", pendingIce: [] }]]), stream: null };
-        showCallModal(message.fromName, "Ringer dig…", profileInitials(message.fromName));
+        const chat = callChatForPeer(message.fromName);
+        callState = { id: message.callId, incoming: true, name: message.fromName, peers: new Map([[message.from, { name: message.fromName, pc: null, status: "incoming", pendingIce: [] }]]), stream: null, chat, audioMuted: false, microphoneMuted: false };
+        showCallModal(message.fromName, "Ringer dig…", profileInitials(message.fromName), chat, message.fromName);
+        const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextConstructor) {
+          try { startCallTone(new AudioContextConstructor()); }
+          catch (error) { console.warn("Ringsignalen stöds inte i den här webbläsaren.", error); }
+        }
         $("#incoming-call-actions").classList.remove("hidden");
         $("#incoming-call-actions").classList.add("flex");
         return;
@@ -594,12 +792,13 @@
       const peer = callState.peers.get(message.from);
       if (!peer) return;
       if (message.type === "accept" && !callState.incoming) {
+        stopCallTone();
         peer.status = "accepted";
         try {
           const connection = createPeerConnection(message.from, peer);
           const offer = await connection.createOffer();
           await connection.setLocalDescription(offer);
-          sendCallSignal("offer", message.from, callState.id, { description: connection.localDescription });
+          if (!sendCallSignal("offer", message.from, callState.id, { description: connection.localDescription })) throw new Error("Samtalserbjudandet kunde inte skickas.");
         } catch (error) {
           console.error("Kunde inte skapa samtalserbjudandet.", error);
           peer.status = "ended";
@@ -612,7 +811,7 @@
           await flushIceCandidates(peer);
           const answer = await connection.createAnswer();
           await connection.setLocalDescription(answer);
-          sendCallSignal("answer", message.from, callState.id, { description: connection.localDescription });
+          if (!sendCallSignal("answer", message.from, callState.id, { description: connection.localDescription })) throw new Error("Samtalssvaret kunde inte skickas.");
           peer.status = "connecting";
           updateCallStatus();
         } catch (error) {
@@ -645,12 +844,13 @@
     }
     async function acceptCall() {
       if (!callState || !callState.incoming) return;
+      stopCallTone();
       try {
         callState.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const [peerId] = callState.peers.keys();
         const peer = callState.peers.get(peerId);
         peer.status = "accepted";
-        sendCallSignal("accept", peerId);
+        if (!sendCallSignal("accept", peerId)) throw new Error("Samtalet kunde inte besvaras via signalservern.");
         clearTimeout(callState.timer);
         updateCallStatus();
       } catch (error) {
@@ -669,6 +869,7 @@
       if (!callState) return;
       const endedCall = callState;
       callState = null;
+      stopCallTone();
       clearTimeout(endedCall.timer);
       if (notifyPeers) for (const peerId of endedCall.peers.keys()) sendCallSignal("end", peerId, endedCall.id);
       for (const peer of endedCall.peers.values()) peer.pc?.close();
@@ -676,16 +877,39 @@
       $("#remote-audio").replaceChildren();
       $("#call-modal").classList.add("hidden");
       $("#call-modal").classList.remove("flex");
+      resetCallControls();
       if (notice) showToast(notice);
     }
     $("#accept-call").addEventListener("click", acceptCall);
     $("#decline-call").addEventListener("click", declineCall);
-    $("#end-call").addEventListener("click", () => finishCall(true));
+    $("#end-call").addEventListener("click", () => { if (callState) finishCall(true); else { $("#call-modal").classList.add("hidden"); $("#call-modal").classList.remove("flex"); } });
     $("#mute-call").addEventListener("click", event => {
       if (!callState?.stream) return;
-      const muted = callState.stream.getAudioTracks().some(track => track.enabled);
-      callState.stream.getAudioTracks().forEach(track => { track.enabled = !muted; });
-      event.currentTarget.textContent = muted ? "Slå på mikrofon" : "Stäng av mikrofon";
+      callState.microphoneMuted = !callState.microphoneMuted;
+      callState.stream.getAudioTracks().forEach(track => { track.enabled = !callState.microphoneMuted; });
+      const label = callState.microphoneMuted ? "Slå på mikrofon" : "Stäng av mikrofon";
+      event.currentTarget.setAttribute("aria-label", label);
+      event.currentTarget.title = label;
+      event.currentTarget.setAttribute("aria-pressed", String(callState.microphoneMuted));
+      event.currentTarget.classList.toggle("border-[#c94f73]", callState.microphoneMuted);
+      event.currentTarget.classList.toggle("bg-[#c94f73]", callState.microphoneMuted);
+      event.currentTarget.classList.toggle("text-white", callState.microphoneMuted);
+      event.currentTarget.classList.toggle("border-white/10", !callState.microphoneMuted);
+      event.currentTarget.classList.toggle("bg-white/[.06]", !callState.microphoneMuted);
+    });
+    $("#mute-audio-call").addEventListener("click", event => {
+      if (!callState) return;
+      callState.audioMuted = !callState.audioMuted;
+      $("#remote-audio").querySelectorAll("audio").forEach(audio => { audio.muted = callState.audioMuted; });
+      const label = callState.audioMuted ? "Slå på samtalsljud" : "Stäng av samtalsljud";
+      event.currentTarget.setAttribute("aria-label", label);
+      event.currentTarget.title = label;
+      event.currentTarget.setAttribute("aria-pressed", String(callState.audioMuted));
+      event.currentTarget.classList.toggle("border-[#c94f73]", callState.audioMuted);
+      event.currentTarget.classList.toggle("bg-[#c94f73]", callState.audioMuted);
+      event.currentTarget.classList.toggle("text-white", callState.audioMuted);
+      event.currentTarget.classList.toggle("border-white/10", !callState.audioMuted);
+      event.currentTarget.classList.toggle("bg-white/[.06]", !callState.audioMuted);
     });
     function renderChatList(filter = "") {
       const needle = filter.trim().toLocaleLowerCase("sv");
@@ -749,8 +973,43 @@
       localStorage.setItem("maxchat-selected", id);
       renderChatList($("#chat-search").value); renderConversation(); renderDetails();
       $("#sidebar").classList.add("mobile-hidden"); $("#chat-area").classList.remove("mobile-hidden");
+      scrollMessagesToBottom();
     }
+    function scrollMessagesToBottom() {
+      const request = ++bottomScrollRequest;
+      const chatId = selectedId;
+      const messageList = $("#message-list");
+      bottomScrollObserver?.disconnect();
+      messageList.scrollTop = messageList.scrollHeight;
+      const finishScroll = () => {
+        if (request !== bottomScrollRequest || selectedId !== chatId) return;
+        messageList.scrollTop = messageList.scrollHeight;
+        Promise.all([...messageList.querySelectorAll("img")].map(image => image.decode().catch(() => {}))).then(() => {
+          if (request === bottomScrollRequest && selectedId === chatId) messageList.scrollTop = messageList.scrollHeight;
+        });
+      };
+      bottomScrollObserver = new ResizeObserver(finishScroll);
+      bottomScrollObserver.observe(messageList);
+      [...messageList.children].forEach(child => bottomScrollObserver.observe(child));
+      requestAnimationFrame(finishScroll);
+      setTimeout(finishScroll, 100);
+      setTimeout(() => {
+        if (request === bottomScrollRequest) {
+          bottomScrollObserver?.disconnect();
+          bottomScrollObserver = null;
+        }
+      }, 3000);
+    }
+    function cancelBottomScroll() {
+      bottomScrollRequest++;
+      bottomScrollObserver?.disconnect();
+      bottomScrollObserver = null;
+    }
+    $("#message-list").addEventListener("wheel", cancelBottomScroll, { passive: true });
+    $("#message-list").addEventListener("touchstart", cancelBottomScroll, { passive: true });
+    $("#message-list").addEventListener("pointerdown", cancelBottomScroll);
     function renderConversation() {
+      const previousScrollTop = $("#message-list").scrollTop;
       const chat = activeChat();
       if (!chat) {
         $("#chat-title").textContent = "MaxChat";
@@ -771,7 +1030,9 @@
       $("#chat-title").setAttribute("tabindex", chat.type === "group" ? "0" : "-1");
       $("#chat-title").title = chat.type === "group" ? "Klicka för att byta gruppnamn" : "";
       $("#chat-title").classList.toggle("cursor-pointer", chat.type === "group");
-      $("#chat-subtitle").textContent = chat.type === "group" ? `${(chat.members || []).length || 1} medlemmar` : chat.online ? "● Aktiv nu" : "Senast aktiv nyligen";
+      const groupMembers = chat.type === "group" ? [...new Set(chat.members || [])] : [];
+      const activeMembers = groupMembers.filter(memberIsActive).length;
+      $("#chat-subtitle").textContent = chat.type === "group" ? `${activeMembers} av ${groupMembers.length} aktiva` : chat.online ? "● Aktiv nu" : "Senast aktiv nyligen";
       $("#chat-subtitle").className = `mt-0.5 text-[11px] ${chat.online ? "text-mint" : "text-muted"}`;
       setAvatar($("#chat-header-avatar"), chat);
       const items = chat.messages || [];
@@ -784,7 +1045,12 @@
         const isEditing = message.id === editingMessageId;
         const isOwnMessage = message.author === currentUser;
         const avatar = messageAvatarMarkup(message, chat);
-        const fileMarkup = message.files?.length ? `<div class="mt-2 space-y-1.5">${message.files.map(file => `<div class="flex max-w-sm items-center gap-3 rounded-xl border border-white/[.08] bg-panel/80 px-3 py-2.5"><span class="grid h-8 w-8 place-items-center rounded-lg bg-accent/10 text-accent">↗</span><span class="min-w-0"><span class="block truncate text-xs font-semibold">${escapeHtml(file.name)}</span><span class="text-[10px] text-muted/65">${escapeHtml(file.size)}</span></span></div>`).join("")}</div>` : "";
+        const fileMarkup = message.files?.length ? `<div class="mt-2 space-y-1.5">${message.files.map(file => {
+          const imageData = /^data:image\/(?:png|jpeg|gif|webp|bmp|avif);base64,/i.test(file.dataUrl || "") ? file.dataUrl : "";
+          return imageData
+            ? `<div class="mt-2"><button type="button" data-image-preview="${escapeHtml(imageData)}" data-image-alt="${escapeHtml(file.name)}" aria-label="Visa ${escapeHtml(file.name)} i större format" class="block cursor-zoom-in text-left"><img src="${escapeHtml(imageData)}" alt="${escapeHtml(file.name)}" class="max-h-80 max-w-full rounded-xl border border-white/[.08] object-contain" loading="lazy"></button><p class="mt-1 text-[10px] text-muted/65">${escapeHtml(file.name)} · ${escapeHtml(file.size)}</p></div>`
+            : `<div class="flex max-w-sm items-center gap-3 rounded-xl border border-white/[.08] bg-panel/80 px-3 py-2.5"><span class="grid h-8 w-8 place-items-center rounded-lg bg-accent/10 text-accent">↗</span><span class="min-w-0"><span class="block truncate text-xs font-semibold">${escapeHtml(file.name)}</span><span class="text-[10px] text-muted/65">${escapeHtml(file.size)}</span></span></div>`;
+        }).join("")}</div>` : "";
         const reactions = message.reactions ? `<div class="mt-2 flex flex-wrap gap-1.5">${Object.entries(message.reactions).filter(([, users]) => users.length).map(([emoji, users]) => `<button data-reaction="${escapeHtml(emoji)}" data-message-id="${escapeHtml(message.id)}" class="reaction flex items-center gap-1 rounded-full border ${users.includes(currentUser) ? "border-accent/40 bg-accent/15 text-accent" : "border-white/10 bg-panel text-muted"} px-2 py-1 text-[11px] transition hover:border-accent/40">${emoji}<span>${users.length}</span></button>`).join("")}</div>` : "";
         const messageText = isEditing
           ? `<form data-edit-form="${escapeHtml(message.id)}" class="mt-2"><textarea data-edit-input rows="3" maxlength="4000" class="w-full resize-y rounded-xl border border-white/10 bg-ink px-3 py-2 text-[13px] leading-[1.65] text-slate-200 outline-none focus:border-accent/50">${escapeHtml(message.text || "")}</textarea><div class="mt-2 flex justify-end gap-2"><button type="button" data-cancel-edit class="rounded-lg px-3 py-1.5 text-[11px] text-muted transition hover:bg-white/10 hover:text-white">Avbryt</button><button type="submit" class="rounded-lg bg-accent px-3 py-1.5 text-[11px] font-semibold text-[#211a2c] transition hover:brightness-110">Spara</button></div></form>`
@@ -804,6 +1070,7 @@
         </article>`;
       }).join("");
       document.querySelectorAll(".reaction").forEach(button => button.addEventListener("click", () => toggleReaction(button.dataset.messageId, button.dataset.reaction)));
+      document.querySelectorAll("[data-image-preview]").forEach(button => button.addEventListener("click", () => openImagePreview(button.dataset.imagePreview, button.dataset.imageAlt)));
       document.querySelectorAll(".react-message").forEach(button => button.addEventListener("click", () => {
         activeMessageActionsId = "";
         renderConversation();
@@ -820,9 +1087,24 @@
         event.preventDefault();
         saveEditedMessage(form.dataset.editForm, form.querySelector("[data-edit-input]").value);
       }));
-      $("#message-list").scrollTop = $("#message-list").scrollHeight;
+      $("#message-list").scrollTop = previousScrollTop;
       saveChats();
     }
+    function openImagePreview(src, alt) {
+      $("#image-preview").src = src;
+      $("#image-preview").alt = alt;
+      $("#image-preview-modal").classList.remove("hidden");
+      $("#image-preview-modal").classList.add("flex");
+      $("#close-image-preview").focus();
+    }
+    function closeImagePreview() {
+      $("#image-preview-modal").classList.add("hidden");
+      $("#image-preview-modal").classList.remove("flex");
+      $("#image-preview").removeAttribute("src");
+      $("#image-preview").alt = "";
+    }
+    $("#close-image-preview").addEventListener("click", closeImagePreview);
+    $("#image-preview-modal").addEventListener("click", event => { if (event.target === $("#image-preview-modal")) closeImagePreview(); });
     function setAvatar(element, chat) {
       element.textContent = chat.logo ? "" : chat.initials || chat.name[0];
       element.style.backgroundColor = chat.color || "#cba6f7";
@@ -849,16 +1131,20 @@
       $("#details-title").textContent = chat.name;
       $("#details-username").textContent = chat.username || `${(chat.members || []).length} medlemmar`;
       setAvatar($("#details-avatar"), chat);
+      renderDetailsStatus(chat);
       if (chat.type === "group") {
         const members = [...new Set(chat.members || [])];
         const isOwner = chat.owner === currentUser;
         $("#group-members-section").classList.remove("hidden");
-        $("#group-members-list").innerHTML = members.map(member => `
+        $("#group-members-list").innerHTML = members.map(member => {
+          const status = memberActivityStatus(member);
+          return `
           <div class="flex items-center gap-2 rounded-lg bg-ink/50 p-2">
-            <span class="avatar h-7 w-7 rounded-lg text-[10px]" style="background:#cba6f7;color:#242333">${escapeHtml(profileInitials(member))}</span>
-            <span class="min-w-0 flex-1 truncate text-[11px] text-slate-300">${escapeHtml(member)}${member === currentUser ? " (du)" : ""}</span>
+            <span class="relative">${memberAvatarMarkup(chat, member)}<i class="online-dot absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-panel ${status.dot}" title="${status.label}" aria-label="${status.label}"></i></span>
+            <span class="min-w-0 flex-1"><span class="block truncate text-[11px] text-slate-300">${escapeHtml(member)}${member === currentUser ? " (du)" : ""}</span><span class="mt-0.5 block truncate text-[9px] text-muted/70">${status.label}</span></span>
             ${member === chat.owner ? '<span class="shrink-0 rounded-full bg-accent/15 px-2 py-1 text-[9px] font-semibold text-accent">Ägare</span>' : isOwner ? `<button type="button" data-transfer-owner="${escapeHtml(member)}" class="shrink-0 rounded-lg px-2 py-1 text-[9px] font-semibold text-accent transition hover:bg-accent/10">Gör till ägare</button><button type="button" data-remove-member="${escapeHtml(member)}" aria-label="Ta bort ${escapeHtml(member)} från gruppchatten" title="Ta bort medlem" class="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-sm text-[#f38ba8] transition hover:bg-[#f38ba8]/10">×</button>` : ""}
-          </div>`).join("");
+          </div>`;
+        }).join("");
         $("#add-group-member").classList.toggle("hidden", !members.includes(currentUser));
         $("#clear-chat").classList.toggle("hidden", !members.includes(currentUser));
         $("#clear-chat").innerHTML = chat.owner === currentUser
@@ -909,25 +1195,28 @@
       const chat = activeChat();
       const message = chat?.messages.find(item => item.id === messageId);
       if (!message || message.author !== currentUser) return;
-      if (!confirm("Vill du ta bort det här meddelandet?")) return;
-      const wasLatest = chat.messages.at(-1)?.id === messageId;
-      chat.messages = chat.messages.filter(item => item.id !== messageId);
-      editingMessageId = "";
-      activeMessageActionsId = "";
-      if (wasLatest) {
-        const latestMessage = chat.messages.at(-1);
-        chat.preview = latestMessage ? latestMessage.text || `📎 ${latestMessage.files?.[0]?.name || "Fil"}` : "Börja en konversation";
-        if (latestMessage?.time) chat.time = latestMessage.time;
-        if (Number.isFinite(latestMessage?.sentAt)) chat.lastMessageAt = latestMessage.sentAt;
-        else delete chat.lastMessageAt;
-      }
-      saveChats();
-      renderChatList($("#chat-search").value);
-      renderConversation();
-      renderDetails();
-      showToast("Meddelandet har tagits bort.");
+      requestGroupConfirmation("Vill du ta bort det här meddelandet? Det går inte att ångra.", () => {
+        if (!chat.messages.some(item => item.id === messageId && item.author === currentUser)) return;
+        const wasLatest = chat.messages.at(-1)?.id === messageId;
+        chat.messages = chat.messages.filter(item => item.id !== messageId);
+        editingMessageId = "";
+        activeMessageActionsId = "";
+        if (wasLatest) {
+          const latestMessage = chat.messages.at(-1);
+          chat.preview = latestMessage ? latestMessage.text || `📎 ${latestMessage.files?.[0]?.name || "Fil"}` : "Börja en konversation";
+          if (latestMessage?.time) chat.time = latestMessage.time;
+          if (Number.isFinite(latestMessage?.sentAt)) chat.lastMessageAt = latestMessage.sentAt;
+          else delete chat.lastMessageAt;
+        }
+        saveChats();
+        renderChatList($("#chat-search").value);
+        renderConversation();
+        renderDetails();
+        showToast("Meddelandet har tagits bort.");
+      }, "Ta bort", { title: "Ta bort meddelande?" });
     }
     function toggleReaction(messageId, emoji) {
+      cancelBottomScroll();
       const message = activeChat().messages.find(item => item.id === messageId);
       if (!message) return;
       message.reactions ||= {};
@@ -960,13 +1249,37 @@
       saveHiddenConversations();
       chats = [chat, ...chats.filter(item => item.id !== chat.id)];
       renderChatList($("#chat-search").value); renderConversation(); renderDetails();
+      scrollMessagesToBottom();
     }
-    $("#message-form").addEventListener("submit", event => {
+    function readImageFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error || new Error(`Kunde inte läsa bilden ${file.name}.`));
+        reader.readAsDataURL(file);
+      });
+    }
+    $("#message-form").addEventListener("submit", async event => {
       event.preventDefault();
       const input = $("#message-input");
       const text = input.value.trim();
       if (!text && !selectedFiles.length) return;
-      sendMessage(text, selectedFiles.map(file => ({ name: file.name, size: formatSize(file.size) })));
+      const sendButton = $('#message-form button[type="submit"]');
+      sendButton.disabled = true;
+      try {
+        const files = await Promise.all(selectedFiles.map(async file => ({
+          name: file.name,
+          size: formatSize(file.size),
+          ...(file.type.startsWith("image/") ? { dataUrl: await readImageFile(file) } : {})
+        })));
+        sendMessage(text, files);
+      } catch (error) {
+        console.error("Kunde inte läsa bifogad fil.", error);
+        showToast("Kunde inte läsa bilden. Försök igen.");
+        return;
+      } finally {
+        sendButton.disabled = false;
+      }
       input.value = ""; input.style.height = "40px"; selectedFiles = []; $("#file-input").value = ""; renderAttachments();
       $("#emoji-picker").classList.add("hidden");
     });
@@ -1034,10 +1347,16 @@
       $("#group-confirm-modal").classList.add("hidden");
       $("#group-confirm-modal").classList.remove("flex");
     }
-    function requestGroupConfirmation(message, onConfirm, confirmLabel = "Ta bort") {
+    function requestGroupConfirmation(message, onConfirm, confirmLabel = "Ta bort", options = {}) {
       pendingGroupConfirmation = onConfirm;
+      $("#group-confirm-title").textContent = options.title || "Bekräfta borttagning";
       $("#group-confirm-message").textContent = message;
-      $("#accept-group-confirm").textContent = confirmLabel;
+      const confirmButton = $("#accept-group-confirm");
+      confirmButton.textContent = confirmLabel;
+      confirmButton.classList.toggle("bg-[#f38ba8]", options.variant !== "primary");
+      confirmButton.classList.toggle("text-[#2b1721]", options.variant !== "primary");
+      confirmButton.classList.toggle("bg-accent", options.variant === "primary");
+      confirmButton.classList.toggle("text-[#211a2c]", options.variant === "primary");
       $("#group-confirm-modal").classList.remove("hidden");
       $("#group-confirm-modal").classList.add("flex");
       $("#cancel-group-confirm").focus();
@@ -1177,11 +1496,17 @@
     function transferGroupOwnership(member) {
       const chat = activeChat();
       if (chat?.type !== "group" || chat.owner !== currentUser || !chat.members.includes(member) || member === currentUser) return;
-      if (!confirm(`Överföra ägarskapet av "${chat.name}" till ${member}?`)) return;
-      chat.owner = member;
-      saveChats();
-      renderDetails();
-      showToast(`${member} är nu ägare av gruppchatten.`);
+      requestGroupConfirmation(
+        `Överföra ägarskapet av "${chat.name}" till ${member}?`,
+        () => {
+          chat.owner = member;
+          saveChats();
+          renderDetails();
+          showToast(`${member} är nu ägare av gruppchatten.`);
+        },
+        "Gör till ägare",
+        { title: "Bekräfta ägarbyte", variant: "primary" }
+      );
     }
     function removeGroupMember(member) {
       const chat = activeChat();
@@ -1283,10 +1608,11 @@
       }
       Object.assign(profile, nextProfile); currentUser = profile.name; renderProfile(); closeProfileModal(); showToast("Profilen har uppdaterats.");
       if (previousName !== name) {
-        saveChats(); renderChatList($("#chat-search").value); renderDetails();
+        saveChats(); renderChatList($("#chat-search").value);
         if (signalSocket?.readyState === WebSocket.OPEN) signalSocket.close();
       }
       renderConversation();
+      renderDetails();
     });
     $("#profile-avatar-input").addEventListener("change", async event => {
       const file = event.target.files?.[0];
@@ -1311,11 +1637,12 @@
     });
     $("#remove-profile-avatar").addEventListener("click", () => { profileAvatarDraft = ""; renderProfile(); });
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") { closeGroupModal(); closeAddGroupMemberModal(); closeGroupConfirmModal(); closeRenameGroupModal(); closeFriendsModal(); closeProfileModal(); $("#emoji-picker").classList.add("hidden"); renderEmojiGrid(); }
+      if (event.key === "Escape") { closeImagePreview(); closeGroupModal(); closeAddGroupMemberModal(); closeGroupConfirmModal(); closeRenameGroupModal(); closeFriendsModal(); closeProfileModal(); $("#emoji-picker").classList.add("hidden"); renderEmojiGrid(); }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); $("#message-search").focus(); }
     });
     renderChatList();
     renderConversation();
+    scrollMessagesToBottom();
     renderDetails();
     renderProfile();
     connectSignaling();
