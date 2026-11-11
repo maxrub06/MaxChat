@@ -49,23 +49,20 @@
   </style>
 </head>
 <body class="h-dvh overflow-hidden bg-ink text-slate-100 antialiased">
-  <main class="mx-auto flex h-full max-w-[1800px] overflow-hidden bg-ink">
+  <main class="flex h-full overflow-hidden bg-ink">
     <aside id="sidebar" class="flex w-full shrink-0 flex-col border-r border-white/[.06] bg-panel md:w-[290px]">
       <header class="flex h-[72px] items-center justify-between border-b border-white/[.06] px-5">
         <a href="#" class="flex items-center gap-3" aria-label="MaxChat startsida">
           <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-accent to-[#89b4fa] text-xl font-extrabold text-[#171523] shadow-lg shadow-accent/10">M</span>
           <span><span class="block text-[17px] font-extrabold tracking-tight">MaxChat</span><span class="block text-[10px] font-semibold uppercase tracking-[.18em] text-muted">dina människor, nära</span></span>
         </a>
-        <button id="new-chat" aria-label="Skapa en grupp" title="Skapa en grupp" class="grid h-9 w-9 place-items-center rounded-xl text-muted transition hover:bg-white/[.07] hover:text-white">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6m3-3h-6"/></svg>
-        </button>
       </header>
 
       <div class="scrollbar-none flex-1 overflow-y-auto px-3 pb-3">
         <div class="mt-4 space-y-1">
           <button class="nav-active flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/></svg>
-            Meddelanden <span class="ml-auto rounded-full bg-accent/15 px-2 py-0.5 text-[10px] text-accent">3</span>
+            Meddelanden <span id="messages-count" class="ml-auto rounded-full bg-accent/15 px-2 py-0.5 text-[10px] text-accent">3</span>
           </button>
           <button id="friends-button" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-muted transition hover:bg-white/[.05] hover:text-white">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6m3-3h-6"/></svg>
@@ -88,7 +85,7 @@
 
       <footer class="flex items-center gap-3 border-t border-white/[.06] px-4 py-3.5">
         <div class="relative">
-          <div id="profile-avatar" class="avatar h-10 w-10 rounded-full bg-[#f9e2af] text-sm text-[#372d1f]">M</div>
+          <div id="profile-avatar" class="avatar h-10 w-10 overflow-hidden rounded-full bg-[#f9e2af] text-sm text-[#372d1f]">M</div>
           <span class="online-dot absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-panel bg-mint"></span>
         </div>
         <div class="min-w-0 flex-1"><p id="profile-display-name" class="truncate text-sm font-semibold">Max Rubin</p><p id="profile-status-label" class="text-[11px] text-mint">● Aktiv nu</p></div>
@@ -104,11 +101,11 @@
           <button id="mobile-back" aria-label="Tillbaka till konversationer" class="rounded-lg p-2 text-muted hover:bg-white/[.07] md:hidden">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
           </button>
-          <div id="chat-header-avatar" class="avatar h-10 w-10 rounded-2xl bg-[#f5c2e7] text-sm text-[#342538]">S</div>
+          <button id="chat-header-avatar" type="button" class="avatar h-10 w-10 rounded-2xl bg-[#f5c2e7] text-sm text-[#342538]">S</button>
           <div class="min-w-0"><h1 id="chat-title" class="truncate text-sm font-bold">Sofia Lind</h1><p id="chat-subtitle" class="mt-0.5 text-[11px] text-mint">● Aktiv nu</p></div>
         </div>
         <div class="flex items-center gap-1">
-          <button class="hidden rounded-lg p-2.5 text-muted transition hover:bg-white/[.07] hover:text-white sm:block" title="Röstsamtal" aria-label="Röstsamtal">
+          <button id="call-button" class="hidden rounded-lg p-2.5 text-muted transition hover:bg-white/[.07] hover:text-white sm:block" title="Röstsamtal" aria-label="Röstsamtal">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.5 3.1a2 2 0 0 1-.6 1.7L7.7 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 1.7-.6l3.1.5a2 2 0 0 1 2.2 2.5Z"/></svg>
           </button>
           <button id="header-details" aria-label="Visa detaljer" title="Visa detaljer" class="rounded-lg p-2.5 text-muted transition hover:bg-white/[.07] hover:text-white lg:hidden">
@@ -124,9 +121,9 @@
 
       <div id="message-list" class="scrollbar-none flex-1 overflow-y-auto px-4 pb-6 pt-5 sm:px-7 lg:px-10"></div>
 
-      <div id="composer-wrap" class="shrink-0 px-3 pb-3 pt-1 sm:px-6 sm:pb-5">
-        <div id="attachment-preview" class="mx-auto mb-2 hidden max-w-4xl rounded-xl border border-white/10 bg-panel p-3"></div>
-        <form id="message-form" class="mx-auto flex max-w-4xl items-end gap-2 rounded-2xl border border-white/[.07] bg-panel px-2.5 py-2 shadow-xl shadow-black/10 focus-within:border-accent/30 sm:px-3">
+      <div id="composer-wrap" class="shrink-0 px-3 pb-3 pt-1 sm:px-4 sm:pb-5">
+        <div id="attachment-preview" class="mb-2 hidden rounded-xl border border-white/10 bg-panel p-3"></div>
+        <form id="message-form" class="flex items-end gap-2 rounded-2xl border border-white/[.07] bg-panel px-2.5 py-2 shadow-xl shadow-black/10 focus-within:border-accent/30 sm:px-3">
           <label title="Bifoga filer" class="grid h-10 w-9 shrink-0 cursor-pointer place-items-center rounded-xl text-muted transition hover:bg-white/[.07] hover:text-accent">
             <input id="file-input" type="file" multiple class="hidden">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.4 11.1-8.5 8.5a6 6 0 0 1-8.5-8.5l8.5-8.5a4 4 0 0 1 5.7 5.7l-8.5 8.5a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
@@ -145,7 +142,6 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
           </button>
         </form>
-        <p class="mx-auto mt-2 hidden max-w-4xl text-center text-[10px] text-muted/40 sm:block">Tryck <kbd class="rounded border border-white/10 px-1">Enter</kbd> för att skicka · <kbd class="rounded border border-white/10 px-1">Shift + Enter</kbd> för ny rad</p>
       </div>
     </section>
 
@@ -153,10 +149,14 @@
       <div class="flex h-[72px] items-center justify-between border-b border-white/[.06] px-5"><h2 class="text-xs font-bold">Konversationsinfo</h2><button id="close-details" aria-label="Stäng detaljer" class="rounded-lg p-1.5 text-muted hover:bg-white/10 hover:text-white lg:hidden">✕</button></div>
       <div class="scrollbar-none overflow-y-auto px-5">
         <div class="flex flex-col items-center border-b border-white/[.06] py-7 text-center">
-          <div id="details-avatar" class="avatar h-[76px] w-[76px] rounded-[26px] bg-[#f5c2e7] text-2xl text-[#342538]">S</div>
+          <button id="details-avatar" type="button" class="avatar h-[76px] w-[76px] rounded-[26px] bg-[#f5c2e7] text-2xl text-[#342538]">S</button>
           <h3 id="details-title" class="mt-4 text-base font-bold">Sofia Lind</h3>
           <p id="details-username" class="mt-1 text-xs text-muted">@sofialind</p>
           <p class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint"><span class="h-1.5 w-1.5 rounded-full bg-mint"></span>Aktiv nu</p>
+        </div>
+        <div id="group-members-section" class="hidden border-b border-white/[.06] py-5">
+          <h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Medlemmar</h4>
+          <div id="group-members-list" class="space-y-2"></div>
         </div>
         <div class="border-b border-white/[.06] py-5"><h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Delade filer</h4><div id="shared-files" class="space-y-2"></div></div>
         <button id="clear-chat" class="mt-5 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-medium text-[#f38ba8] transition hover:bg-[#f38ba8]/10">
@@ -173,6 +173,15 @@
         <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Gruppnamn</span><input id="group-name" required maxlength="40" placeholder="t.ex. Fredagshänget" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none placeholder:text-muted/50 focus:border-accent/50"></label>
         <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Bjud in personer <span class="font-normal text-muted">(frivilligt)</span></span><input id="group-members" placeholder="Skriv namn, separerade med komma" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none placeholder:text-muted/50 focus:border-accent/50"></label>
         <button type="submit" class="w-full rounded-xl bg-accent py-3 text-sm font-bold text-[#211a2c] transition hover:brightness-110">Skapa grupp</button>
+      </form>
+    </section>
+  </div>
+  <div id="rename-group-modal" class="modal-backdrop fixed inset-0 z-30 hidden items-center justify-center p-4">
+    <section role="dialog" aria-modal="true" aria-labelledby="rename-group-title" class="pop-in w-full max-w-md rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 shadow-2xl">
+      <div class="mb-6 flex items-start justify-between"><div><p class="text-[10px] font-bold uppercase tracking-[.17em] text-accent">Gruppinställningar</p><h2 id="rename-group-title" class="mt-2 text-xl font-bold">Byt gruppnamn</h2><p class="mt-1 text-xs text-muted">Välj ett nytt namn för gruppchatten.</p></div><button id="close-rename-group-modal" type="button" aria-label="Stäng" class="rounded-lg p-2 text-muted hover:bg-white/10 hover:text-white">✕</button></div>
+      <form id="rename-group-form" class="space-y-4">
+        <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Gruppnamn</span><input id="rename-group-input" required maxlength="40" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none placeholder:text-muted/50 focus:border-accent/50"></label>
+        <div class="flex gap-2"><button id="cancel-rename-group" type="button" class="flex-1 rounded-xl border border-white/10 py-3 text-sm font-semibold text-slate-300 transition hover:bg-white/[.06]">Avbryt</button><button type="submit" class="flex-1 rounded-xl bg-accent py-3 text-sm font-bold text-[#211a2c] transition hover:brightness-110">Spara namn</button></div>
       </form>
     </section>
   </div>
@@ -194,6 +203,13 @@
     <section role="dialog" aria-modal="true" aria-labelledby="profile-modal-title" class="pop-in w-full max-w-md rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 shadow-2xl">
       <div class="mb-6 flex items-start justify-between"><div><p class="text-[10px] font-bold uppercase tracking-[.17em] text-accent">Ditt konto</p><h2 id="profile-modal-title" class="mt-2 text-xl font-bold">Profilinställningar</h2><p class="mt-1 text-xs text-muted">Så här ser dina vänner dig.</p></div><button id="close-profile-modal" aria-label="Stäng" class="rounded-lg p-2 text-muted hover:bg-white/10 hover:text-white">✕</button></div>
       <form id="profile-form" class="space-y-4">
+        <div class="flex items-center gap-4">
+          <div id="profile-avatar-preview" class="avatar h-14 w-14 overflow-hidden rounded-full bg-[#f9e2af] text-lg text-[#372d1f]">M</div>
+          <div class="flex flex-col items-start gap-2">
+            <label class="cursor-pointer rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/[.06]">Byt profilbild<input id="profile-avatar-input" type="file" accept="image/*" class="hidden"></label>
+            <button id="remove-profile-avatar" type="button" class="text-[11px] text-muted transition hover:text-[#f38ba8]">Ta bort profilbild</button>
+          </div>
+        </div>
         <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Visningsnamn</span><input id="profile-name-input" required maxlength="40" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none focus:border-accent/50"></label>
         <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Om mig</span><textarea id="profile-about-input" maxlength="120" rows="2" placeholder="Berätta lite om dig själv" class="w-full resize-none rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none placeholder:text-muted/50 focus:border-accent/50"></textarea></label>
         <label class="block"><span class="mb-2 block text-xs font-semibold text-slate-300">Status</span><select id="profile-status-input" class="w-full rounded-xl border border-white/10 bg-ink px-3.5 py-3 text-sm outline-none focus:border-accent/50"><option value="online">Aktiv nu</option><option value="away">Borta</option><option value="busy">Stör ej</option></select></label>
@@ -202,6 +218,23 @@
     </section>
   </div>
   <div id="toast" role="status" class="pointer-events-none fixed bottom-5 left-1/2 z-40 -translate-x-1/2 translate-y-3 rounded-xl border border-white/10 bg-[#29283a] px-4 py-2.5 text-xs font-semibold text-white opacity-0 shadow-xl transition-all"></div>
+  <div id="call-modal" class="modal-backdrop fixed inset-0 z-30 hidden items-center justify-center p-4">
+    <section role="dialog" aria-modal="true" aria-labelledby="call-title" class="pop-in w-full max-w-sm rounded-3xl border border-white/10 bg-[#1e1e2e] p-6 text-center shadow-2xl">
+      <div id="call-avatar" class="avatar mx-auto h-16 w-16 rounded-[22px] bg-accent text-xl text-[#242333]">?</div>
+      <h2 id="call-title" class="mt-4 text-lg font-bold">Samtal</h2>
+      <p id="call-status" class="mt-1 text-xs text-muted">Ansluter…</p>
+      <div id="remote-audio" class="hidden"></div>
+      <div id="incoming-call-actions" class="mt-6 hidden justify-center gap-3">
+        <button id="decline-call" type="button" class="rounded-xl bg-[#f38ba8] px-5 py-3 text-sm font-bold text-[#2b1721]">Avvisa</button>
+        <button id="accept-call" type="button" class="rounded-xl bg-mint px-5 py-3 text-sm font-bold text-[#172718]">Svara</button>
+      </div>
+      <div id="active-call-actions" class="mt-6 hidden justify-center gap-3">
+        <button id="mute-call" type="button" class="rounded-xl border border-white/10 bg-white/[.06] px-4 py-3 text-sm font-semibold text-white">Stäng av mikrofon</button>
+        <button id="end-call" type="button" class="rounded-xl bg-[#f38ba8] px-5 py-3 text-sm font-bold text-[#2b1721]">Avsluta</button>
+      </div>
+    </section>
+  </div>
+  <input id="group-logo-input" type="file" accept="image/*" class="hidden">
 
   <script>
     const starterChats = [
@@ -213,7 +246,7 @@
         { id: "s5", author: "Sofia Lind", initials: "S", color: "#f5c2e7", time: "14:39", text: "Perfekt! Lördag kl 14? 💜" },
         { id: "s6", author: "Max Rubin", initials: "M", color: "#f9e2af", time: "14:40", text: "Haha, det låter som en plan! ✨", reactions: { "❤️": ["Sofia Lind"], "🙌": ["Sofia Lind", "Max Rubin"] } }
       ]},
-      { id: "design", name: "Designhäng 🎨", username: "3 medlemmar", type: "group", color: "#cba6f7", initials: "D", online: false, preview: "Elias: Slänger upp skisserna strax", time: "12:45", unread: 1, members: ["Elias Norén", "Maja Berg", "Max Rubin"], messages: [
+      { id: "design", name: "Designhäng 🎨", username: "3 medlemmar", type: "group", owner: "Max Rubin", color: "#cba6f7", initials: "D", online: false, preview: "Elias: Slänger upp skisserna strax", time: "12:45", unread: 1, members: ["Elias Norén", "Maja Berg", "Max Rubin"], messages: [
         { id: "d1", author: "Maja Berg", initials: "M", color: "#fab387", time: "12:30", text: "Har någon testat den nya färgpaletten? 🎨" },
         { id: "d2", author: "Elias Norén", initials: "E", color: "#89b4fa", time: "12:45", text: "Slänger upp skisserna strax" }
       ]},
@@ -221,7 +254,7 @@
         { id: "a1", author: "Max Rubin", initials: "M", color: "#f9e2af", time: "11:10", text: "Hur gick det med vandringen?" },
         { id: "a2", author: "Alex Andersson", initials: "A", color: "#89b4fa", time: "11:20", text: "Så fint väder också! 🏔️" }
       ]},
-      { id: "gaming", name: "Spelkväll 🎮", username: "5 medlemmar", type: "group", color: "#a6e3a1", initials: "S", online: false, preview: "Du: Jag är på! 🎮", time: "Igår", unread: 0, members: ["Vera Holm", "Alex Andersson", "Elias Norén", "Maja Berg", "Max Rubin"], messages: [
+      { id: "gaming", name: "Spelkväll 🎮", username: "5 medlemmar", type: "group", owner: "Max Rubin", color: "#a6e3a1", initials: "S", online: false, preview: "Du: Jag är på! 🎮", time: "Igår", unread: 0, members: ["Vera Holm", "Alex Andersson", "Elias Norén", "Maja Berg", "Max Rubin"], messages: [
         { id: "g1", author: "Vera Holm", initials: "V", color: "#f38ba8", time: "20:05", text: "Spelkväll på fredag? 🍕" },
         { id: "g2", author: "Max Rubin", initials: "M", color: "#f9e2af", time: "20:08", text: "Jag är på! 🎮" }
       ]},
@@ -234,48 +267,114 @@
     const profile = loadProfile();
     let currentUser = profile.name;
     let chats = loadChats();
-    let selectedId = localStorage.getItem("maxchat-selected") || chats[0].id;
+    let friends = loadFriends();
+    let hiddenConversationIds = loadHiddenConversations();
+    let profileAvatarDraft = profile.avatar || "";
+    let selectedId = localStorage.getItem("maxchat-selected") || chats[0]?.id || "";
     let selectedFiles = [];
+    let editingMessageId = "";
+    let activeMessageActionsId = "";
     let toastTimer;
+    let signalSocket = null;
+    let signalRetryTimer = null;
+    let callState = null;
     const $ = (selector) => document.querySelector(selector);
     const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-    const activeChat = () => chats.find((chat) => chat.id === selectedId) || chats[0];
+    const activeChat = () => chats.find((chat) => chat.id === selectedId) || chats[0] || null;
     function loadProfile() {
       try {
         const saved = JSON.parse(localStorage.getItem("maxchat-profile"));
-        return { name: typeof saved?.name === "string" && saved.name.trim() ? saved.name.trim() : "Max Rubin", about: typeof saved?.about === "string" ? saved.about : "", status: ["online", "away", "busy"].includes(saved?.status) ? saved.status : "online" };
+        return { name: typeof saved?.name === "string" && saved.name.trim() ? saved.name.trim() : "Max Rubin", about: typeof saved?.about === "string" ? saved.about : "", status: ["online", "away", "busy"].includes(saved?.status) ? saved.status : "online", avatar: typeof saved?.avatar === "string" && saved.avatar.startsWith("data:image/") ? saved.avatar : "" };
       } catch (error) {
         console.warn("Kunde inte läsa sparad profil.", error);
-        return { name: "Max Rubin", about: "", status: "online" };
+        return { name: "Max Rubin", about: "", status: "online", avatar: "" };
       }
+    }
+    function loadFriends() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("maxchat-friends"));
+        if (Array.isArray(saved)) return saved.filter(id => typeof id === "string");
+      } catch (error) {
+        console.warn("Kunde inte läsa sparade vänner.", error);
+      }
+      return chats.filter(chat => chat.type === "dm").map(chat => chat.id);
+    }
+    function loadHiddenConversations() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("maxchat-hidden-conversations"));
+        return Array.isArray(saved) ? saved.filter(id => typeof id === "string") : [];
+      } catch (error) {
+        console.warn("Kunde inte läsa dolda konversationer.", error);
+        return [];
+      }
+    }
+    function saveFriends() {
+      try { localStorage.setItem("maxchat-friends", JSON.stringify(friends)); }
+      catch (error) { showToast("Kunde inte spara vänlistan."); console.error("Kunde inte spara vänlistan.", error); }
+    }
+    function saveHiddenConversations() {
+      try { localStorage.setItem("maxchat-hidden-conversations", JSON.stringify(hiddenConversationIds)); }
+      catch (error) { showToast("Kunde inte spara konversationslistan."); console.error("Kunde inte spara konversationslistan.", error); }
     }
     function profileInitials(name = currentUser) {
       return name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase();
+    }
+    function messageAvatarMarkup(message, chat) {
+      const avatar = message.author === currentUser ? profile.avatar : chat?.type === "group" ? chat.memberAvatars?.[message.author] || message.avatar : "";
+      if (typeof avatar === "string" && avatar.startsWith("data:image/")) {
+        return `<span class="avatar h-9 w-9 rounded-[13px] bg-cover bg-center text-xs" style="background-image:url('${escapeHtml(avatar)}')"></span>`;
+      }
+      return `<span class="avatar h-9 w-9 rounded-[13px] text-xs" style="background:${escapeHtml(message.color || "#cba6f7")};color:#242333">${escapeHtml(message.initials || message.author[0])}</span>`;
     }
     function renderProfile() {
       const status = { online: { label: "● Aktiv nu", color: "text-mint", dot: "bg-mint" }, away: { label: "◷ Borta", color: "text-[#f9e2af]", dot: "bg-[#f9e2af]" }, busy: { label: "● Stör ej", color: "text-[#f38ba8]", dot: "bg-[#f38ba8]" } }[profile.status];
       $("#profile-display-name").textContent = currentUser;
       $("#profile-status-label").textContent = status.label;
       $("#profile-status-label").className = `text-[11px] ${status.color}`;
-      $("#profile-avatar").textContent = profileInitials();
+      [$("#profile-avatar"), $("#profile-avatar-preview")].forEach(avatar => {
+        if (!avatar) return;
+        avatar.textContent = profileAvatarDraft ? "" : profileInitials();
+        avatar.style.backgroundImage = profileAvatarDraft ? `url("${profileAvatarDraft}")` : "";
+        avatar.style.backgroundPosition = "center";
+        avatar.style.backgroundSize = "cover";
+      });
       $("#profile-avatar").nextElementSibling.className = `online-dot absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-panel ${status.dot}`;
-      $("#friends-count").textContent = chats.filter(chat => chat.type === "dm").length;
+      $("#friends-count").textContent = friends.length;
     }
     function renderFriendsList(filter = "") {
       const needle = filter.trim().toLocaleLowerCase("sv");
-      const friends = chats.filter(chat => chat.type === "dm" && chat.name.toLocaleLowerCase("sv").includes(needle));
-      $("#friends-list").innerHTML = friends.length ? friends.map(friend => `
+      const visibleFriends = friends.map(id => chats.find(chat => chat.id === id)).filter(friend => friend?.type === "dm" && friend.name.toLocaleLowerCase("sv").includes(needle));
+      $("#friends-list").innerHTML = visibleFriends.length ? visibleFriends.map(friend => `
         <div class="flex items-center gap-3 rounded-xl px-2.5 py-2.5 transition hover:bg-white/[.04]">
           <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background:${escapeHtml(friend.color)};color:#242333">${escapeHtml(friend.initials)}</span>${friend.online ? '<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#1e1e2e] bg-mint"></i>' : ""}</span>
           <span class="min-w-0 flex-1"><span class="block truncate text-xs font-semibold">${escapeHtml(friend.name)}</span><span class="mt-1 block text-[10px] ${friend.online ? "text-mint" : "text-muted/60"}">${friend.online ? "Aktiv nu" : "Offline"}</span></span>
           <button type="button" data-message-friend="${escapeHtml(friend.id)}" class="rounded-lg bg-accent/10 px-2.5 py-2 text-[10px] font-semibold text-accent transition hover:bg-accent/20">Meddelande</button>
+          <button type="button" data-remove-friend="${escapeHtml(friend.id)}" aria-label="Ta bort ${escapeHtml(friend.name)} som vän" title="Ta bort vän" class="rounded-lg p-2 text-muted transition hover:bg-[#f38ba8]/10 hover:text-[#f38ba8]">✕</button>
         </div>`).join("") : '<p class="px-3 py-5 text-center text-xs text-muted/60">Inga vänner hittades.</p>';
       document.querySelectorAll("[data-message-friend]").forEach(button => button.addEventListener("click", () => { closeFriendsModal(); selectChat(button.dataset.messageFriend); }));
+      document.querySelectorAll("[data-remove-friend]").forEach(button => button.addEventListener("click", () => removeFriend(button.dataset.removeFriend)));
+    }
+    function removeFriend(id) {
+      const friend = chats.find(chat => chat.id === id && chat.type === "dm");
+      if (!friend || !confirm(`Vill du ta bort ${friend.name} från din vänlista? DM-konversationen finns kvar.`)) return;
+      friends = friends.filter(friendId => friendId !== id);
+      saveFriends();
+      renderFriendsList($("#friends-search").value);
+      renderProfile();
+      showToast(`${friend.name} togs bort från vänlistan.`);
     }
     function loadChats() {
       try {
         const saved = JSON.parse(localStorage.getItem("maxchat-chats"));
-        return Array.isArray(saved) && saved.length ? saved : structuredClone(starterChats);
+        const loaded = Array.isArray(saved) ? saved : structuredClone(starterChats);
+        loaded.forEach(chat => {
+          if (chat.type !== "group") return;
+          chat.members = [...new Set(Array.isArray(chat.members) ? chat.members.filter(member => typeof member === "string" && member.trim()) : [])];
+          if (!chat.owner) chat.owner = chat.members.includes(currentUser) ? currentUser : chat.members[0];
+          if (chat.owner && !chat.members.includes(chat.owner)) chat.members.push(chat.owner);
+          chat.username = `${chat.members.length} medlemmar`;
+        });
+        return loaded;
       } catch (error) {
         console.warn("Kunde inte läsa sparade konversationer.", error);
         return structuredClone(starterChats);
@@ -291,18 +390,288 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { toast.classList.add("opacity-0", "translate-y-3"); toast.classList.remove("opacity-100", "translate-y-0"); }, 2400);
     }
+    function signalingPeerId(name) {
+      return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("sv").replace(/[^a-z0-9]/g, "");
+    }
+    function connectSignaling() {
+      if (!["http:", "https:"].includes(location.protocol)) return;
+      const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+      signalSocket = new WebSocket(`${protocol}//${location.host}/signal`);
+      signalSocket.addEventListener("open", () => signalSocket.send(JSON.stringify({ type: "register", name: currentUser })));
+      signalSocket.addEventListener("message", event => {
+        let message;
+        try { message = JSON.parse(event.data); }
+        catch (error) { console.error("Ogiltigt svar från samtalsservern.", error); return; }
+        handleSignalMessage(message).catch(error => {
+          console.error("Kunde inte hantera samtalssignal.", error);
+          finishCall(true, "Samtalet kunde inte anslutas.");
+        });
+      });
+      signalSocket.addEventListener("error", () => {
+        if (callState) $("#call-status").textContent = "Anslutningen till samtalsservern avbröts.";
+      });
+      signalSocket.addEventListener("close", () => {
+        if (callState) finishCall(false, "Anslutningen till samtalsservern avbröts.");
+        clearTimeout(signalRetryTimer);
+        signalRetryTimer = setTimeout(connectSignaling, 3000);
+      });
+    }
+    function sendCallSignal(type, peerId, callId = callState?.id, payload = {}) {
+      if (!signalSocket || signalSocket.readyState !== WebSocket.OPEN) return false;
+      signalSocket.send(JSON.stringify({ type, to: peerId, callId, ...payload }));
+      return true;
+    }
+    function showCallModal(title, status, initials = "?") {
+      $("#call-title").textContent = title;
+      $("#call-status").textContent = status;
+      $("#call-avatar").textContent = initials;
+      $("#incoming-call-actions").classList.add("hidden");
+      $("#incoming-call-actions").classList.remove("flex");
+      $("#active-call-actions").classList.add("hidden");
+      $("#active-call-actions").classList.remove("flex");
+      $("#call-modal").classList.remove("hidden");
+      $("#call-modal").classList.add("flex");
+    }
+    function updateCallStatus() {
+      if (!callState) return;
+      const peers = [...callState.peers.values()];
+      const connected = peers.filter(peer => peer.pc?.connectionState === "connected").length;
+      const pending = peers.filter(peer => ["calling", "accepted", "connecting"].includes(peer.status)).length;
+      const names = peers.map(peer => peer.name).join(", ");
+      $("#call-title").textContent = names || "Samtal";
+      $("#call-status").textContent = connected ? `Pågående samtal · ${connected + 1} deltagare` : pending ? "Ansluter…" : "Väntar på svar…";
+      $("#call-avatar").textContent = peers.length === 1 ? profileInitials(peers[0].name) : "☎";
+      $("#incoming-call-actions").classList.add("hidden");
+      $("#incoming-call-actions").classList.remove("flex");
+      $("#active-call-actions").classList.remove("hidden");
+      $("#active-call-actions").classList.add("flex");
+    }
+    function startCall() {
+      if (callState) { showToast("Ett samtal pågår redan."); return; }
+      if (!signalSocket || signalSocket.readyState !== WebSocket.OPEN) {
+        showToast(location.protocol === "file:" ? "Starta MaxChat-servern för att ringa." : "Ansluter till samtalsservern. Försök igen om en stund.");
+        return;
+      }
+      if (!navigator.mediaDevices?.getUserMedia || !window.RTCPeerConnection) {
+        showToast("Webbläsaren stöder inte röstsamtal. Använd HTTPS eller localhost.");
+        return;
+      }
+      const chat = activeChat();
+      const targets = chat.type === "group" ? [...new Set(chat.members || [])].filter(name => signalingPeerId(name) && signalingPeerId(name) !== signalingPeerId(currentUser)) : [chat.name];
+      if (!targets.length || targets.every(name => !signalingPeerId(name))) { showToast("Det finns ingen att ringa i den här konversationen."); return; }
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        if (callState) { stream.getTracks().forEach(track => track.stop()); return; }
+        const peers = new Map(targets.map(name => [signalingPeerId(name), { name, pc: null, status: "calling", pendingIce: [] }]));
+        callState = { id: crypto.randomUUID(), incoming: false, peers, stream };
+        showCallModal(targets.join(", "), "Ringer…", targets.length === 1 ? profileInitials(targets[0]) : "☎");
+        updateCallStatus();
+        callState.timer = setTimeout(() => {
+          if (callState && ![...callState.peers.values()].some(peer => peer.pc?.connectionState === "connected")) finishCall(true, "Inget svar. Samtalet avslutades.");
+        }, 45000);
+        for (const [peerId, peer] of peers) {
+          if (!sendCallSignal("call", peerId)) { finishCall(false, "Kunde inte skicka samtalsförfrågan."); return; }
+        }
+      }).catch(error => {
+        console.error("Kunde inte komma åt mikrofonen.", error);
+        showToast(error.name === "NotAllowedError" ? "Tillåt mikrofonåtkomst för att ringa." : "Kunde inte starta mikrofonen.");
+      });
+    }
+    function createPeerConnection(peerId, peer) {
+      if (peer.pc) return peer.pc;
+      const connection = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+      peer.pc = connection;
+      peer.status = "connecting";
+      callState.stream?.getTracks().forEach(track => connection.addTrack(track, callState.stream));
+      connection.addEventListener("icecandidate", event => {
+        if (event.candidate) sendCallSignal("ice", peerId, callState?.id, { candidate: event.candidate });
+      });
+      connection.addEventListener("track", event => {
+        const audio = document.createElement("audio");
+        audio.autoplay = true;
+        audio.srcObject = event.streams[0];
+        audio.dataset.peerId = peerId;
+        $("#remote-audio").querySelector(`[data-peer-id="${CSS.escape(peerId)}"]`)?.remove();
+        $("#remote-audio").append(audio);
+        audio.play().catch(error => console.warn("Fjärrljud väntar på webbläsarens uppspelningsbehörighet.", error));
+      });
+      connection.addEventListener("connectionstatechange", () => {
+        if (!callState) return;
+        if (connection.connectionState === "connected") peer.status = "connected";
+        if (connection.connectionState === "failed" || connection.connectionState === "closed") {
+          peer.status = "ended";
+          if (![...callState.peers.values()].some(item => ["calling", "accepted", "connecting", "connected"].includes(item.status))) {
+            finishCall(false, "Samtalet kunde inte anslutas.");
+            return;
+          }
+        }
+        updateCallStatus();
+      });
+      return connection;
+    }
+    async function flushIceCandidates(peer) {
+      while (peer.pc?.remoteDescription && peer.pendingIce.length) await peer.pc.addIceCandidate(peer.pendingIce.shift());
+    }
+    async function handleSignalMessage(message) {
+      if (message.type === "registered") return;
+      if (message.type === "error") { showToast(message.message || "Samtalsservern avvisade anslutningen."); return; }
+      if (message.type === "unavailable") {
+        if (callState?.id !== message.callId) return;
+        const peer = callState.peers.get(message.to);
+        if (peer) peer.status = "offline";
+        updateCallStatus();
+        if (![...callState.peers.values()].some(item => ["calling", "accepted", "connecting", "connected"].includes(item.status))) finishCall(false, "Ingen av deltagarna är online.");
+        return;
+      }
+      if (message.type === "call") {
+        if (callState) { sendCallSignal("reject", message.from, message.callId); return; }
+        callState = { id: message.callId, incoming: true, name: message.fromName, peers: new Map([[message.from, { name: message.fromName, pc: null, status: "incoming", pendingIce: [] }]]), stream: null };
+        showCallModal(message.fromName, "Ringer dig…", profileInitials(message.fromName));
+        $("#incoming-call-actions").classList.remove("hidden");
+        $("#incoming-call-actions").classList.add("flex");
+        $("#accept-call").onclick = acceptCall;
+        $("#decline-call").onclick = declineCall;
+        return;
+      }
+      if (!callState || callState.id !== message.callId) return;
+      const peer = callState.peers.get(message.from);
+      if (!peer) return;
+      if (message.type === "accept" && !callState.incoming) {
+        peer.status = "accepted";
+        try {
+          const connection = createPeerConnection(message.from, peer);
+          const offer = await connection.createOffer();
+          await connection.setLocalDescription(offer);
+          sendCallSignal("offer", message.from, callState.id, { description: connection.localDescription });
+        } catch (error) {
+          console.error("Kunde inte skapa samtalserbjudandet.", error);
+          peer.status = "ended";
+          updateCallStatus();
+        }
+      } else if (message.type === "offer" && callState.incoming && message.description) {
+        try {
+          const connection = createPeerConnection(message.from, peer);
+          await connection.setRemoteDescription(message.description);
+          await flushIceCandidates(peer);
+          const answer = await connection.createAnswer();
+          await connection.setLocalDescription(answer);
+          sendCallSignal("answer", message.from, callState.id, { description: connection.localDescription });
+          peer.status = "connecting";
+          updateCallStatus();
+        } catch (error) {
+          console.error("Kunde inte besvara samtalet.", error);
+          finishCall(true, "Samtalet kunde inte anslutas.");
+        }
+      } else if (message.type === "answer" && message.description && peer.pc) {
+        try {
+          await peer.pc.setRemoteDescription(message.description);
+          await flushIceCandidates(peer);
+          peer.status = "connecting";
+          updateCallStatus();
+        } catch (error) {
+          console.error("Kunde inte ansluta samtalet.", error);
+          finishCall(true, "Samtalet kunde inte anslutas.");
+        }
+      } else if (message.type === "ice" && message.candidate) {
+        if (peer.pc?.remoteDescription) {
+          try { await peer.pc.addIceCandidate(message.candidate); }
+          catch (error) { console.error("Kunde inte lägga till nätverkskandidat.", error); }
+        } else peer.pendingIce.push(message.candidate);
+      } else if (message.type === "reject" || message.type === "end") {
+        peer.pc?.close();
+        peer.status = "ended";
+        $("#remote-audio").querySelector(`[data-peer-id="${CSS.escape(message.from)}"]`)?.remove();
+        if (message.type === "reject" && callState.incoming) finishCall(false, "Samtalet avvisades.");
+        else if (![...callState.peers.values()].some(item => ["calling", "accepted", "connecting", "connected"].includes(item.status))) finishCall(false, message.type === "reject" ? "Samtalet avvisades." : "Samtalet avslutades.");
+        else updateCallStatus();
+      }
+    }
+    async function acceptCall() {
+      if (!callState || !callState.incoming) return;
+      try {
+        callState.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const [peerId] = callState.peers.keys();
+        const peer = callState.peers.get(peerId);
+        peer.status = "accepted";
+        sendCallSignal("accept", peerId);
+        clearTimeout(callState.timer);
+        updateCallStatus();
+      } catch (error) {
+        console.error("Kunde inte komma åt mikrofonen.", error);
+        declineCall();
+        showToast(error.name === "NotAllowedError" ? "Tillåt mikrofonåtkomst för att svara." : "Kunde inte starta mikrofonen.");
+      }
+    }
+    function declineCall() {
+      if (!callState) return;
+      const [peerId] = callState.peers.keys();
+      sendCallSignal("reject", peerId);
+      finishCall(false);
+    }
+    function finishCall(notifyPeers = true, notice = "") {
+      if (!callState) return;
+      const endedCall = callState;
+      callState = null;
+      clearTimeout(endedCall.timer);
+      if (notifyPeers) for (const peerId of endedCall.peers.keys()) sendCallSignal("end", peerId, endedCall.id);
+      for (const peer of endedCall.peers.values()) peer.pc?.close();
+      endedCall.stream?.getTracks().forEach(track => track.stop());
+      $("#remote-audio").replaceChildren();
+      $("#call-modal").classList.add("hidden");
+      $("#call-modal").classList.remove("flex");
+      if (notice) showToast(notice);
+    }
+    $("#accept-call").addEventListener("click", acceptCall);
+    $("#decline-call").addEventListener("click", declineCall);
+    $("#end-call").addEventListener("click", () => finishCall(true));
+    $("#mute-call").addEventListener("click", event => {
+      if (!callState?.stream) return;
+      const muted = callState.stream.getAudioTracks().some(track => track.enabled);
+      callState.stream.getAudioTracks().forEach(track => { track.enabled = !muted; });
+      event.currentTarget.textContent = muted ? "Slå på mikrofon" : "Stäng av mikrofon";
+    });
     function renderChatList(filter = "") {
       const needle = filter.trim().toLocaleLowerCase("sv");
-      const filtered = chats.filter((chat) => chat.name.toLocaleLowerCase("sv").includes(needle));
+      const conversations = chats.filter(chat => !hiddenConversationIds.includes(chat.id));
+      const filtered = conversations.filter((chat) => chat.name.toLocaleLowerCase("sv").includes(needle));
+      $("#messages-count").textContent = conversations.length;
       $("#chat-list").innerHTML = filtered.length ? filtered.map((chat) => `
-        <button data-chat-id="${escapeHtml(chat.id)}" class="chat-row flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition hover:bg-white/[.05] ${chat.id === selectedId ? "chat-active" : ""}">
-          <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background:${escapeHtml(chat.color)};color:#242333">${escapeHtml(chat.initials)}</span>${chat.online ? '<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-panel bg-mint"></i>' : ""}</span>
-          <span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="truncate text-[12px] font-semibold ${chat.unread ? "text-white" : "text-slate-300"}">${escapeHtml(chat.name)}</span><time class="shrink-0 text-[9px] text-muted/60">${escapeHtml(chat.time)}</time></span><span class="mt-1 flex items-center justify-between gap-2"><span class="truncate text-[10px] text-muted/65">${escapeHtml(chat.preview || "Börja en konversation")}</span>${chat.unread ? `<span class="grid h-[17px] min-w-[17px] place-items-center rounded-full bg-accent px-1 text-[9px] font-bold text-[#211a2c]">${chat.unread}</span>` : ""}</span></span>
-        </button>`).join("") : '<p class="px-3 py-5 text-center text-xs text-muted/60">Inga konversationer hittades.</p>';
+        <div class="group flex items-center rounded-xl transition hover:bg-white/[.05] ${chat.id === selectedId ? "chat-active" : ""}">
+          <button data-chat-id="${escapeHtml(chat.id)}" class="chat-row flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2.5 py-2.5 text-left">
+            <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background-color:${escapeHtml(chat.color)};background-image:${chat.logo ? `url('${escapeHtml(chat.logo)}')` : "none"};background-position:center;background-size:cover;color:#242333">${chat.logo ? "" : escapeHtml(chat.initials)}</span>${chat.online ? '<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-panel bg-mint"></i>' : ""}</span>
+            <span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="truncate text-[12px] font-semibold ${chat.unread ? "text-white" : "text-slate-300"}">${escapeHtml(chat.name)}</span><time class="shrink-0 text-[9px] text-muted/60">${escapeHtml(chat.time)}</time></span><span class="mt-1 flex items-center justify-between gap-2"><span class="truncate text-[10px] text-muted/65">${escapeHtml(chat.type === "group" ? `${(chat.members || []).length} medlemmar` : chat.preview || "Börja en konversation")}</span>${chat.unread ? `<span class="grid h-[17px] min-w-[17px] place-items-center rounded-full bg-accent px-1 text-[9px] font-bold text-[#211a2c]">${chat.unread}</span>` : ""}</span></span>
+          </button>
+          <button type="button" data-hide-chat="${escapeHtml(chat.id)}" aria-label="Ta bort ${escapeHtml(chat.name)} från konversationslistan" title="Ta bort från listan" class="mr-1 rounded-lg p-2 text-muted opacity-60 transition hover:bg-white/[.08] hover:text-[#f38ba8] md:opacity-0 md:group-hover:opacity-100">✕</button>
+        </div>`).join("") : '<p class="px-3 py-5 text-center text-xs text-muted/60">Inga konversationer hittades.</p>';
       document.querySelectorAll(".chat-row").forEach((button) => button.addEventListener("click", () => selectChat(button.dataset.chatId)));
+      document.querySelectorAll("[data-hide-chat]").forEach(button => button.addEventListener("click", () => hideConversation(button.dataset.hideChat)));
+    }
+    function hideConversation(id) {
+      if (!chats.some(chat => chat.id === id)) return;
+      if (!hiddenConversationIds.includes(id)) hiddenConversationIds.push(id);
+      saveHiddenConversations();
+      if (selectedId === id) {
+        const nextChat = chats.find(chat => !hiddenConversationIds.includes(chat.id));
+        if (nextChat) {
+          selectedId = nextChat.id;
+          localStorage.setItem("maxchat-selected", selectedId);
+          $("#composer-wrap").classList.remove("hidden");
+          renderConversation(); renderDetails();
+        } else {
+          $("#chat-title").textContent = "MaxChat";
+          $("#chat-subtitle").textContent = "Välj en konversation";
+          $("#message-list").replaceChildren();
+          $("#composer-wrap").classList.add("hidden");
+        }
+      }
+      renderChatList($("#chat-search").value);
+      showToast("Konversationen togs bort från listan. Den finns kvar under Vänner om det är en DM.");
     }
     function selectChat(id) {
+      if (selectedId !== id) editingMessageId = "";
       selectedId = id;
+      hiddenConversationIds = hiddenConversationIds.filter(hiddenId => hiddenId !== id);
+      saveHiddenConversations();
+      $("#composer-wrap").classList.remove("hidden");
       const chat = activeChat(); chat.unread = 0;
       localStorage.setItem("maxchat-selected", id);
       renderChatList($("#chat-search").value); renderConversation(); renderDetails();
@@ -310,43 +679,172 @@
     }
     function renderConversation() {
       const chat = activeChat();
+      if (!chat) {
+        $("#chat-title").textContent = "MaxChat";
+        $("#chat-title").setAttribute("role", "heading");
+        $("#chat-title").setAttribute("aria-level", "1");
+        $("#chat-title").setAttribute("tabindex", "-1");
+        $("#chat-title").title = "";
+        $("#chat-title").classList.remove("cursor-pointer");
+        $("#chat-subtitle").textContent = "Välj en konversation";
+        $("#message-list").replaceChildren();
+        $("#composer-wrap").classList.add("hidden");
+        return;
+      }
+      $("#composer-wrap").classList.remove("hidden");
       $("#chat-title").textContent = chat.name;
+      $("#chat-title").setAttribute("role", chat.type === "group" ? "button" : "heading");
+      $("#chat-title").setAttribute("aria-level", "1");
+      $("#chat-title").setAttribute("tabindex", chat.type === "group" ? "0" : "-1");
+      $("#chat-title").title = chat.type === "group" ? "Klicka för att byta gruppnamn" : "";
+      $("#chat-title").classList.toggle("cursor-pointer", chat.type === "group");
       $("#chat-subtitle").textContent = chat.type === "group" ? `${(chat.members || []).length || 1} medlemmar` : chat.online ? "● Aktiv nu" : "Senast aktiv nyligen";
       $("#chat-subtitle").className = `mt-0.5 text-[11px] ${chat.online ? "text-mint" : "text-muted"}`;
       setAvatar($("#chat-header-avatar"), chat);
       const items = chat.messages || [];
-      let previousAuthor = "";
       $("#message-list").innerHTML = `<div class="mx-auto mb-7 max-w-4xl text-center"><span class="inline-flex items-center gap-2 rounded-full border border-white/[.07] bg-panel/70 px-3 py-1.5 text-[10px] text-muted/70">✦ &nbsp; Här börjar er konversation</span></div>` + items.map((message, index) => {
-        const sameAuthor = previousAuthor === message.author;
         const showDate = index === 0;
-        previousAuthor = message.author;
-        const avatar = `<span class="avatar h-9 w-9 rounded-[13px] text-xs" style="background:${escapeHtml(message.color || "#cba6f7")};color:#242333">${escapeHtml(message.initials || message.author[0])}</span>`;
+        const isEditing = message.id === editingMessageId;
+        const isOwnMessage = message.author === currentUser;
+        const avatar = messageAvatarMarkup(message, chat);
         const fileMarkup = message.files?.length ? `<div class="mt-2 space-y-1.5">${message.files.map(file => `<div class="flex max-w-sm items-center gap-3 rounded-xl border border-white/[.08] bg-panel/80 px-3 py-2.5"><span class="grid h-8 w-8 place-items-center rounded-lg bg-accent/10 text-accent">↗</span><span class="min-w-0"><span class="block truncate text-xs font-semibold">${escapeHtml(file.name)}</span><span class="text-[10px] text-muted/65">${escapeHtml(file.size)}</span></span></div>`).join("")}</div>` : "";
         const reactions = message.reactions ? `<div class="mt-2 flex flex-wrap gap-1.5">${Object.entries(message.reactions).filter(([, users]) => users.length).map(([emoji, users]) => `<button data-reaction="${escapeHtml(emoji)}" data-message-id="${escapeHtml(message.id)}" class="reaction flex items-center gap-1 rounded-full border ${users.includes(currentUser) ? "border-accent/40 bg-accent/15 text-accent" : "border-white/10 bg-panel text-muted"} px-2 py-1 text-[11px] transition hover:border-accent/40">${emoji}<span>${users.length}</span></button>`).join("")}</div>` : "";
+        const messageText = isEditing
+          ? `<form data-edit-form="${escapeHtml(message.id)}" class="mt-2"><textarea data-edit-input rows="3" maxlength="4000" class="w-full resize-y rounded-xl border border-white/10 bg-ink px-3 py-2 text-[13px] leading-[1.65] text-slate-200 outline-none focus:border-accent/50">${escapeHtml(message.text || "")}</textarea><div class="mt-2 flex justify-end gap-2"><button type="button" data-cancel-edit class="rounded-lg px-3 py-1.5 text-[11px] text-muted transition hover:bg-white/10 hover:text-white">Avbryt</button><button type="submit" class="rounded-lg bg-accent px-3 py-1.5 text-[11px] font-semibold text-[#211a2c] transition hover:brightness-110">Spara</button></div></form>`
+          : message.text ? `<p class="message-body mt-1 text-[13px] leading-[1.65] text-slate-300">${escapeHtml(message.text)}</p>` : "";
+        const reactionButton = `<button type="button" class="react-message flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-slate-200 transition hover:bg-white/[.07]" data-message-id="${escapeHtml(message.id)}" title="Lägg till reaktion"><span aria-hidden="true">😊</span><span>Reagera</span></button>`;
+        const editButton = isOwnMessage && message.text ? `<button type="button" data-edit-message="${escapeHtml(message.id)}" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-slate-200 transition hover:bg-white/[.07]" title="Redigera meddelande"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m16 4 4 4L8 20H4v-4L16 4Z"/></svg><span>Redigera</span></button>` : "";
+        const deleteButton = isOwnMessage ? `<button type="button" data-delete-message="${escapeHtml(message.id)}" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-[#f38ba8] transition hover:bg-[#f38ba8]/10" title="Ta bort meddelande"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18m-2 0-1 14H6L5 6m4-5h6v5m-5 5v5m4-5v5"/></svg><span>Ta bort</span></button>` : "";
+        const actionButtons = isEditing ? "" : reactionButton + editButton + deleteButton;
+        const desktopButtons = `<button type="button" class="react-message rounded-lg px-2 py-1 text-sm transition hover:bg-white/10" data-message-id="${escapeHtml(message.id)}" title="Lägg till reaktion" aria-label="Lägg till reaktion">😊</button>` + (isOwnMessage ? (message.text ? `<button type="button" data-edit-message="${escapeHtml(message.id)}" class="rounded-lg px-2 py-1 text-xs text-slate-300 transition hover:bg-white/10" title="Redigera meddelande" aria-label="Redigera meddelande">Redigera</button>` : "") + `<button type="button" data-delete-message="${escapeHtml(message.id)}" class="rounded-lg px-2 py-1 text-xs text-[#f38ba8] transition hover:bg-white/10" title="Ta bort meddelande" aria-label="Ta bort meddelande">Ta bort</button>` : "");
+        const messageActions = isEditing ? "" : `<div class="absolute right-2 top-2 hidden items-center gap-1 rounded-xl border border-white/10 bg-[#29283a] p-1 shadow-xl sm:top-0 sm:-translate-y-1/2 sm:group-hover:flex">${desktopButtons}</div>` + `<button type="button" data-toggle-message-actions="${escapeHtml(message.id)}" class="absolute right-1 top-1 grid h-8 w-8 place-items-center rounded-lg text-muted transition hover:bg-white/10 hover:text-white sm:hidden" aria-label="Visa meddelandeåtgärder" aria-expanded="${activeMessageActionsId === message.id}" title="Meddelandeåtgärder"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg></button>`;
+        const mobileMenu = activeMessageActionsId === message.id ? `<div class="ml-auto mt-2 w-40 rounded-xl border border-white/10 bg-[#29283a] p-1.5 shadow-xl sm:hidden">${actionButtons}</div>` : "";
         return `${showDate ? '<div class="mb-6 flex items-center gap-3"><span class="h-px flex-1 bg-white/[.06]"></span><span class="text-[9px] font-bold uppercase tracking-[.15em] text-muted/45">Idag</span><span class="h-px flex-1 bg-white/[.06]"></span></div>' : ""}
-        <article class="message group relative flex gap-3 rounded-xl px-2 py-1.5 transition hover:bg-white/[.018] ${sameAuthor ? "mt-0.5" : "mt-4"}" data-text="${escapeHtml(message.text || "")}">
-          <div class="w-9 shrink-0">${sameAuthor ? "" : avatar}</div>
-          <div class="min-w-0 flex-1"><div class="flex items-baseline gap-2">${sameAuthor ? "" : `<span class="text-[12px] font-bold" style="color:${escapeHtml(message.color || "#cba6f7")}">${escapeHtml(message.author)}</span>`}<time class="text-[9px] text-muted/45">${escapeHtml(message.time || "")}</time></div>${message.text ? `<p class="message-body mt-1 text-[13px] leading-[1.65] text-slate-300">${escapeHtml(message.text)}</p>` : ""}${fileMarkup}${reactions}</div>
-          <div class="absolute right-2 top-0 hidden -translate-y-1/2 items-center rounded-lg border border-white/10 bg-[#29283a] p-1 shadow-xl group-hover:flex"><button class="react-message rounded-md px-2 py-1 text-[12px] hover:bg-white/10" data-message-id="${escapeHtml(message.id)}" title="Lägg till reaktion">😊</button></div>
+        <article class="message group relative mt-4 flex gap-3 rounded-xl px-2 py-1.5 transition hover:bg-white/[.018]" data-text="${escapeHtml(message.text || "")}">
+          <div class="w-9 shrink-0">${avatar}</div>
+          <div class="min-w-0 flex-1 pr-8 sm:pr-0"><div class="flex min-h-8 items-center gap-2"><span class="text-[12px] font-bold" style="color:${escapeHtml(message.color || "#cba6f7")}">${escapeHtml(message.author)}</span><time class="text-[9px] text-muted/45">${escapeHtml(message.time || "")}</time>${message.edited ? '<span class="text-[9px] text-muted/50">(redigerat)</span>' : ""}</div>${messageText}${fileMarkup}${reactions}${mobileMenu}</div>
+          ${messageActions}
         </article>`;
       }).join("");
       document.querySelectorAll(".reaction").forEach(button => button.addEventListener("click", () => toggleReaction(button.dataset.messageId, button.dataset.reaction)));
-      document.querySelectorAll(".react-message").forEach(button => button.addEventListener("click", () => openQuickReactions(button.dataset.messageId)));
+      document.querySelectorAll(".react-message").forEach(button => button.addEventListener("click", () => {
+        activeMessageActionsId = "";
+        renderConversation();
+        openQuickReactions(button.dataset.messageId);
+      }));
+      document.querySelectorAll("[data-edit-message]").forEach(button => button.addEventListener("click", () => editMessage(button.dataset.editMessage)));
+      document.querySelectorAll("[data-delete-message]").forEach(button => button.addEventListener("click", () => deleteMessage(button.dataset.deleteMessage)));
+      document.querySelectorAll("[data-toggle-message-actions]").forEach(button => button.addEventListener("click", () => {
+        activeMessageActionsId = activeMessageActionsId === button.dataset.toggleMessageActions ? "" : button.dataset.toggleMessageActions;
+        renderConversation();
+      }));
+      document.querySelectorAll("[data-cancel-edit]").forEach(button => button.addEventListener("click", () => { editingMessageId = ""; renderConversation(); }));
+      document.querySelectorAll("[data-edit-form]").forEach(form => form.addEventListener("submit", event => {
+        event.preventDefault();
+        saveEditedMessage(form.dataset.editForm, form.querySelector("[data-edit-input]").value);
+      }));
       $("#message-list").scrollTop = $("#message-list").scrollHeight;
       saveChats();
     }
     function setAvatar(element, chat) {
-      element.textContent = chat.initials || chat.name[0];
+      element.textContent = chat.logo ? "" : chat.initials || chat.name[0];
       element.style.backgroundColor = chat.color || "#cba6f7";
+      element.style.backgroundImage = chat.logo ? `url("${chat.logo}")` : "";
+      element.style.backgroundPosition = "center";
+      element.style.backgroundSize = "cover";
       element.style.color = "#242333";
+      const editable = chat.type === "group";
+      element.disabled = !editable;
+      element.title = editable ? "Klicka för att byta gruppens logga" : "";
+      element.setAttribute("aria-label", editable ? `Byt logga för ${chat.name}` : chat.name);
+      element.classList.toggle("cursor-pointer", editable);
     }
     function renderDetails() {
       const chat = activeChat();
+      if (!chat) {
+        $("#details-title").textContent = "Ingen konversation";
+        $("#details-username").textContent = "";
+        $("#group-members-section").classList.add("hidden");
+        $("#shared-files").replaceChildren();
+        $("#clear-chat").classList.add("hidden");
+        return;
+      }
       $("#details-title").textContent = chat.name;
       $("#details-username").textContent = chat.username || `${(chat.members || []).length} medlemmar`;
       setAvatar($("#details-avatar"), chat);
+      if (chat.type === "group") {
+        const members = [...new Set(chat.members || [])];
+        const isOwner = chat.owner === currentUser;
+        $("#group-members-section").classList.remove("hidden");
+        $("#group-members-list").innerHTML = members.map(member => `
+          <div class="flex items-center gap-2 rounded-lg bg-ink/50 p-2">
+            <span class="avatar h-7 w-7 rounded-lg text-[10px]" style="background:#cba6f7;color:#242333">${escapeHtml(profileInitials(member))}</span>
+            <span class="min-w-0 flex-1 truncate text-[11px] text-slate-300">${escapeHtml(member)}${member === currentUser ? " (du)" : ""}</span>
+            ${member === chat.owner ? '<span class="shrink-0 rounded-full bg-accent/15 px-2 py-1 text-[9px] font-semibold text-accent">Ägare</span>' : isOwner ? `<button type="button" data-transfer-owner="${escapeHtml(member)}" class="shrink-0 rounded-lg px-2 py-1 text-[9px] font-semibold text-accent transition hover:bg-accent/10">Gör till ägare</button><button type="button" data-remove-member="${escapeHtml(member)}" aria-label="Ta bort ${escapeHtml(member)} från gruppchatten" title="Ta bort medlem" class="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-sm text-[#f38ba8] transition hover:bg-[#f38ba8]/10">×</button>` : ""}
+          </div>`).join("");
+        $("#clear-chat").classList.toggle("hidden", !members.includes(currentUser));
+        $("#clear-chat").innerHTML = chat.owner === currentUser
+          ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18m-2 0-1 14H6L5 6m4-5h6v5"/></svg>Ta bort gruppchatt'
+          : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14 5-5-5-5m5 5H9"/></svg>Lämna gruppchatt';
+        document.querySelectorAll("[data-transfer-owner]").forEach(button => button.addEventListener("click", () => transferGroupOwnership(button.dataset.transferOwner)));
+        document.querySelectorAll("[data-remove-member]").forEach(button => button.addEventListener("click", () => removeGroupMember(button.dataset.removeMember)));
+      } else {
+        $("#group-members-section").classList.add("hidden");
+        $("#group-members-list").replaceChildren();
+        $("#clear-chat").classList.remove("hidden");
+        $("#clear-chat").innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18m-2 0-1 14H6L5 6m4-5h6v5"/></svg>Rensa konversation';
+      }
       const files = (chat.messages || []).flatMap(message => message.files || []).slice(-4).reverse();
       $("#shared-files").innerHTML = files.length ? files.map(file => `<div class="flex min-w-0 items-center gap-2 rounded-lg bg-ink/50 p-2"><span class="text-accent">↗</span><span class="truncate text-[10px] text-slate-300">${escapeHtml(file.name)}</span></div>`).join("") : '<p class="text-[11px] text-muted/50">Inga delade filer ännu.</p>';
+    }
+    function editMessage(messageId) {
+      const message = activeChat()?.messages.find(item => item.id === messageId);
+      if (!message || message.author !== currentUser || !message.text) return;
+      editingMessageId = messageId;
+      activeMessageActionsId = "";
+      renderConversation();
+      const input = $("#message-list [data-edit-input]");
+      input?.focus();
+      input?.setSelectionRange(input.value.length, input.value.length);
+    }
+    function saveEditedMessage(messageId, value) {
+      const chat = activeChat();
+      const message = chat?.messages.find(item => item.id === messageId);
+      if (!message || message.author !== currentUser || message.id !== editingMessageId) return;
+      const text = value.trim();
+      if (!text && !message.files?.length) {
+        showToast("Meddelandet kan inte vara tomt.");
+        return;
+      }
+      message.text = text;
+      message.edited = true;
+      editingMessageId = "";
+      activeMessageActionsId = "";
+      if (chat.messages.at(-1)?.id === messageId) chat.preview = text || `📎 ${message.files?.[0]?.name || "Fil"}`;
+      saveChats();
+      renderChatList($("#chat-search").value);
+      renderConversation();
+      showToast("Meddelandet har redigerats.");
+    }
+    function deleteMessage(messageId) {
+      const chat = activeChat();
+      const message = chat?.messages.find(item => item.id === messageId);
+      if (!message || message.author !== currentUser) return;
+      if (!confirm("Vill du ta bort det här meddelandet?")) return;
+      const wasLatest = chat.messages.at(-1)?.id === messageId;
+      chat.messages = chat.messages.filter(item => item.id !== messageId);
+      editingMessageId = "";
+      activeMessageActionsId = "";
+      if (wasLatest) {
+        const latestMessage = chat.messages.at(-1);
+        chat.preview = latestMessage ? latestMessage.text || `📎 ${latestMessage.files?.[0]?.name || "Fil"}` : "Börja en konversation";
+        if (latestMessage?.time) chat.time = latestMessage.time;
+      }
+      saveChats();
+      renderChatList($("#chat-search").value);
+      renderConversation();
+      renderDetails();
+      showToast("Meddelandet har tagits bort.");
     }
     function toggleReaction(messageId, emoji) {
       const message = activeChat().messages.find(item => item.id === messageId);
@@ -359,6 +857,7 @@
       renderConversation();
     }
     function openQuickReactions(messageId) {
+      activeMessageActionsId = "";
       const picker = $("#emoji-picker");
       picker.classList.remove("hidden");
       $("#emoji-grid").innerHTML = emojis.slice(0, 12).map(emoji => `<button type="button" class="rounded-lg p-1.5 text-lg transition hover:bg-white/10" data-quick-emoji="${emoji}">${emoji}</button>`).join("");
@@ -369,10 +868,13 @@
     }
     function sendMessage(text, files = []) {
       const chat = activeChat();
+      editingMessageId = "";
       const message = { id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, author: currentUser, initials: profileInitials(), color: "#f9e2af", time: new Date().toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }), text, files };
       chat.messages.push(message);
       chat.preview = text || `📎 ${files[0]?.name || "Fil"}`;
       chat.time = "nu";
+      hiddenConversationIds = hiddenConversationIds.filter(id => id !== chat.id);
+      saveHiddenConversations();
       chats = [chat, ...chats.filter(item => item.id !== chat.id)];
       renderChatList($("#chat-search").value); renderConversation(); renderDetails();
     }
@@ -412,7 +914,6 @@
       const term = event.target.value.toLocaleLowerCase("sv");
       document.querySelectorAll(".message").forEach(message => { message.classList.toggle("hidden", term.length > 0 && !message.dataset.text.toLocaleLowerCase("sv").includes(term)); });
     });
-    $("#new-chat").addEventListener("click", openGroupModal);
     $("#new-chat-small").addEventListener("click", openGroupModal);
     function openGroupModal() { $("#group-modal").classList.remove("hidden"); $("#group-modal").classList.add("flex"); $("#group-name").focus(); }
     function closeGroupModal() { $("#group-modal").classList.add("hidden"); $("#group-modal").classList.remove("flex"); }
@@ -423,25 +924,156 @@
       const name = $("#group-name").value.trim();
       if (!name) return;
       const members = $("#group-members").value.split(",").map(value => value.trim()).filter(Boolean);
-      const group = { id: `group-${Date.now()}`, name, username: `${members.length + 1} medlemmar`, type: "group", color: "#cba6f7", initials: name.slice(0, 1).toUpperCase(), online: false, preview: "Gruppen skapades", time: "nu", unread: 0, members: [...members, currentUser], messages: [{ id: `welcome-${Date.now()}`, author: currentUser, initials: profileInitials(), color: "#f9e2af", time: "nu", text: `Välkommen till ${name}! 🎉` }] };
+      const groupMembers = [...new Set([...members, currentUser])];
+      const group = { id: `group-${Date.now()}`, name, username: `${groupMembers.length} medlemmar`, type: "group", owner: currentUser, color: "#cba6f7", initials: name.slice(0, 1).toUpperCase(), online: false, preview: "Gruppen skapades", time: "nu", unread: 0, members: groupMembers, messages: [{ id: `welcome-${Date.now()}`, author: currentUser, initials: profileInitials(), color: "#f9e2af", time: "nu", text: `Välkommen till ${name}! 🎉` }] };
       chats.unshift(group); saveChats(); closeGroupModal(); $("#group-form").reset(); selectChat(group.id); showToast("Gruppen skapades!");
     });
+    function chooseGroupLogo() {
+      if (activeChat().type === "group") $("#group-logo-input").click();
+    }
+    $("#chat-header-avatar").addEventListener("click", chooseGroupLogo);
+    $("#details-avatar").addEventListener("click", chooseGroupLogo);
+    $("#group-logo-input").addEventListener("change", async event => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (!file) return;
+      if (activeChat().type !== "group") return;
+      if (!file.type.startsWith("image/")) { showToast("Välj en bildfil."); return; }
+      if (file.size > 10 * 1024 * 1024) { showToast("Loggan måste vara mindre än 10 MB."); return; }
+      try {
+        const bitmap = await createImageBitmap(file);
+        const scale = Math.min(1, 512 / Math.max(bitmap.width, bitmap.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("Canvas-kontexten kunde inte skapas.");
+        context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        bitmap.close();
+        activeChat().logo = canvas.toDataURL("image/jpeg", 0.82);
+        saveChats();
+        renderChatList($("#chat-search").value);
+        renderConversation();
+        renderDetails();
+      } catch (error) {
+        console.error("Kunde inte läsa gruppens logga.", error);
+        showToast("Kunde inte läsa bilden. Prova en annan bildfil.");
+      }
+    });
+    function openRenameGroupModal() {
+      const chat = activeChat();
+      if (chat.type !== "group") return;
+      $("#rename-group-input").value = chat.name;
+      $("#rename-group-modal").classList.remove("hidden");
+      $("#rename-group-modal").classList.add("flex");
+      $("#rename-group-input").focus();
+      $("#rename-group-input").select();
+    }
+    function closeRenameGroupModal() {
+      $("#rename-group-modal").classList.add("hidden");
+      $("#rename-group-modal").classList.remove("flex");
+    }
+    function renameActiveGroup(event) {
+      event.preventDefault();
+      const chat = activeChat();
+      if (chat.type !== "group") return;
+      const name = $("#rename-group-input").value.trim();
+      if (!name || name === chat.name) return;
+      chat.name = name;
+      chat.initials = name[0].toLocaleUpperCase("sv");
+      saveChats();
+      closeRenameGroupModal();
+      renderChatList($("#chat-search").value);
+      renderConversation();
+      renderDetails();
+      showToast("Gruppnamnet har ändrats.");
+    }
+    $("#chat-title").addEventListener("click", openRenameGroupModal);
+    $("#chat-title").addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openRenameGroupModal();
+      }
+    });
+    $("#rename-group-form").addEventListener("submit", renameActiveGroup);
+    $("#close-rename-group-modal").addEventListener("click", closeRenameGroupModal);
+    $("#cancel-rename-group").addEventListener("click", closeRenameGroupModal);
+    $("#rename-group-modal").addEventListener("click", event => { if (event.target === $("#rename-group-modal")) closeRenameGroupModal(); });
     $("#mobile-back").addEventListener("click", () => { $("#chat-area").classList.add("mobile-hidden"); $("#sidebar").classList.remove("mobile-hidden"); });
     $("#header-details").addEventListener("click", () => { $("#details").classList.toggle("mobile-hidden"); $("#details").classList.toggle("flex"); });
     $("#close-details").addEventListener("click", () => { $("#details").classList.add("mobile-hidden"); $("#details").classList.remove("flex"); });
     $("#clear-chat").addEventListener("click", () => {
+      const chat = activeChat();
+      if (chat?.type === "group") {
+        if (chat.owner === currentUser) {
+          if (confirm(`Ta bort gruppchatten "${chat.name}" för alla?`)) removeGroupFromChats(chat);
+        } else if (chat.members.includes(currentUser) && confirm(`Vill du lämna gruppchatten "${chat.name}"?`)) {
+          chat.members = chat.members.filter(member => member !== currentUser);
+          chat.username = `${chat.members.length} medlemmar`;
+          saveChats();
+          removeGroupFromChats(chat, false);
+        }
+        return;
+      }
       if (!confirm("Vill du rensa alla meddelanden i den här konversationen?")) return;
-      activeChat().messages = []; activeChat().preview = "Börja en konversation"; saveChats(); renderConversation(); renderDetails(); showToast("Konversationen har rensats.");
+      chat.messages = []; chat.preview = "Börja en konversation"; saveChats(); renderConversation(); renderDetails(); showToast("Konversationen har rensats.");
     });
+    function transferGroupOwnership(member) {
+      const chat = activeChat();
+      if (chat?.type !== "group" || chat.owner !== currentUser || !chat.members.includes(member) || member === currentUser) return;
+      if (!confirm(`Överföra ägarskapet av "${chat.name}" till ${member}?`)) return;
+      chat.owner = member;
+      saveChats();
+      renderDetails();
+      showToast(`${member} är nu ägare av gruppchatten.`);
+    }
+    function removeGroupMember(member) {
+      const chat = activeChat();
+      if (chat?.type !== "group" || chat.owner !== currentUser || member === currentUser || member === chat.owner || !chat.members.includes(member)) return;
+      if (!confirm(`Ta bort ${member} från gruppchatten "${chat.name}"?`)) return;
+      chat.members = chat.members.filter(existingMember => existingMember !== member);
+      chat.username = `${chat.members.length} medlemmar`;
+      saveChats();
+      renderChatList($("#chat-search").value);
+      renderConversation();
+      renderDetails();
+      showToast(`${member} har tagits bort från gruppchatten.`);
+    }
+    function removeGroupFromChats(chat, deleted = true) {
+      chats = chats.filter(item => item.id !== chat.id);
+      hiddenConversationIds = hiddenConversationIds.filter(id => id !== chat.id);
+      saveChats();
+      saveHiddenConversations();
+      const nextChat = chats.find(item => !hiddenConversationIds.includes(item.id)) || chats[0] || null;
+      selectedId = nextChat?.id || "";
+      if (nextChat) {
+        hiddenConversationIds = hiddenConversationIds.filter(id => id !== nextChat.id);
+        saveHiddenConversations();
+        localStorage.setItem("maxchat-selected", selectedId);
+      } else {
+        localStorage.removeItem("maxchat-selected");
+      }
+      renderChatList($("#chat-search").value);
+      renderConversation();
+      renderDetails();
+      showToast(deleted ? "Gruppchatten har tagits bort." : "Du har lämnat gruppchatten.");
+    }
+    $("#call-button").addEventListener("click", startCall);
     function openFriendsModal() { renderFriendsList($("#friends-search").value); $("#friends-modal").classList.remove("hidden"); $("#friends-modal").classList.add("flex"); $("#friend-name").focus(); }
     function closeFriendsModal() { $("#friends-modal").classList.add("hidden"); $("#friends-modal").classList.remove("flex"); }
     function openProfileModal() {
+      profileAvatarDraft = profile.avatar || "";
       $("#profile-name-input").value = currentUser;
       $("#profile-about-input").value = profile.about;
       $("#profile-status-input").value = profile.status;
+      renderProfile();
       $("#profile-modal").classList.remove("hidden"); $("#profile-modal").classList.add("flex"); $("#profile-name-input").focus();
     }
-    function closeProfileModal() { $("#profile-modal").classList.add("hidden"); $("#profile-modal").classList.remove("flex"); }
+    function closeProfileModal() {
+      profileAvatarDraft = profile.avatar || "";
+      renderProfile();
+      $("#profile-modal").classList.add("hidden"); $("#profile-modal").classList.remove("flex");
+    }
     $("#friends-button").addEventListener("click", openFriendsModal);
     $("#close-friends-modal").addEventListener("click", closeFriendsModal);
     $("#friends-modal").addEventListener("click", event => { if (event.target === $("#friends-modal")) closeFriendsModal(); });
@@ -454,7 +1086,7 @@
       if (duplicate) { $("#friend-name").value = ""; renderFriendsList($("#friends-search").value); showToast("Den personen finns redan i din vänlista."); return; }
       const id = `friend-${Date.now()}`;
       const friend = { id, name, username: `@${name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("sv").replace(/[^a-z0-9]+/g, "")}`, type: "dm", color: ["#89b4fa", "#f5c2e7", "#fab387", "#a6e3a1", "#cba6f7"][chats.filter(chat => chat.type === "dm").length % 5], initials: name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase(), online: false, preview: "Börja en konversation", time: "nu", unread: 0, messages: [] };
-      chats.unshift(friend); saveChats(); renderChatList($("#chat-search").value); renderProfile(); renderFriendsList($("#friends-search").value); $("#friend-name").value = "";
+      chats.unshift(friend); friends.push(friend.id); saveChats(); saveFriends(); renderChatList($("#chat-search").value); renderProfile(); renderFriendsList($("#friends-search").value); $("#friend-name").value = "";
       showToast(`${name} lades till i din vänlista.`);
     });
     $("#profile-button").addEventListener("click", openProfileModal);
@@ -464,13 +1096,14 @@
       event.preventDefault();
       const name = $("#profile-name-input").value.trim();
       if (!name) return;
-      const nextProfile = { name, about: $("#profile-about-input").value.trim(), status: $("#profile-status-input").value };
+      const nextProfile = { name, about: $("#profile-about-input").value.trim(), status: $("#profile-status-input").value, avatar: profileAvatarDraft };
       try { localStorage.setItem("maxchat-profile", JSON.stringify(nextProfile)); }
       catch (error) { showToast("Kunde inte spara profilinställningarna."); console.error("Kunde inte spara profilinställningarna.", error); return; }
       const previousName = currentUser;
       if (previousName !== name) {
         chats.forEach(chat => {
           chat.members = chat.members?.map(member => member === previousName ? name : member);
+          if (chat.owner === previousName) chat.owner = name;
           chat.messages?.forEach(message => {
             if (message.author === previousName) { message.author = name; message.initials = profileInitials(name); }
             Object.values(message.reactions || {}).forEach(users => {
@@ -481,16 +1114,43 @@
         });
       }
       Object.assign(profile, nextProfile); currentUser = profile.name; renderProfile(); closeProfileModal(); showToast("Profilen har uppdaterats.");
-      if (previousName !== name) { saveChats(); renderChatList($("#chat-search").value); renderConversation(); renderDetails(); }
+      if (previousName !== name) {
+        saveChats(); renderChatList($("#chat-search").value); renderDetails();
+        if (signalSocket?.readyState === WebSocket.OPEN) signalSocket.close();
+      }
+      renderConversation();
     });
+    $("#profile-avatar-input").addEventListener("change", async event => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (!file) return;
+      if (!file.type.startsWith("image/")) { showToast("Välj en bildfil."); return; }
+      if (file.size > 10 * 1024 * 1024) { showToast("Bilden måste vara mindre än 10 MB."); return; }
+      try {
+        const bitmap = await createImageBitmap(file);
+        const scale = Math.min(1, 512 / Math.max(bitmap.width, bitmap.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        bitmap.close();
+        profileAvatarDraft = canvas.toDataURL("image/jpeg", 0.82);
+        renderProfile();
+      } catch (error) {
+        console.error("Kunde inte läsa profilbilden.", error);
+        showToast("Kunde inte läsa bilden. Prova en annan bildfil.");
+      }
+    });
+    $("#remove-profile-avatar").addEventListener("click", () => { profileAvatarDraft = ""; renderProfile(); });
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") { closeGroupModal(); closeFriendsModal(); closeProfileModal(); $("#emoji-picker").classList.add("hidden"); renderEmojiGrid(); }
+      if (event.key === "Escape") { closeGroupModal(); closeRenameGroupModal(); closeFriendsModal(); closeProfileModal(); $("#emoji-picker").classList.add("hidden"); renderEmojiGrid(); }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); $("#message-search").focus(); }
     });
     renderChatList();
     renderConversation();
     renderDetails();
     renderProfile();
+    connectSignaling();
   </script>
 </body>
 </html>
