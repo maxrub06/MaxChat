@@ -131,6 +131,7 @@
   #group-members-list button[data-remove-member] {
     background: rgb(243 139 168 / 10%);
   }
+  }
   #add-group-member {
     min-height: 46px; margin-top: 12px; padding: 12px 14px;
     font-size: 13px; text-align: center; border-radius: 14px;
@@ -1649,8 +1650,7 @@
     function openFriendsModal() {
       updateKnownUserOptions();
       renderFriendsList($("#friends-search").value);
-      $("#friends-modal").classList.remove("hidden"); $("#friends-modal").classList.add("flex"); $("#friend-name").focus();
-    }
+      $("#friends-modal").classList.remove("hidden"); $("#friends-modal").classList.add("flex");    }
     function closeFriendsModal() { $("#friends-modal").classList.add("hidden"); $("#friends-modal").classList.remove("flex"); }
     function openProfileModal() {
       profileAvatarDraft = profile.avatar || "";
