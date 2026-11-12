@@ -28,27 +28,6 @@
         }
       }
     };
-    let deferredPrompt;
-
-const downloadBtn = document.getElementById("downloadBtn");
-
-window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-    deferredPrompt = event;
-});
-
-downloadBtn.addEventListener("click", async (event) => {
-    event.preventDefault();
-
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-    } else {
-        alert("För att installera BlueChat, öppna webbläsarens meny och välj 'Lägg till på startskärmen'.");
-    }
-});
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1799,6 +1778,49 @@ status.lastChild.textContent = dm.label;
     renderDetails();
     renderProfile();
     connectSignaling();
+
+    function showDownloadSystemMessage(text) {
+  const chat = activeChat();
+  if (!chat) return;
+
+  chat.messages.push({
+    id: `system-${crypto.randomUUID()}`,
+    type: "system",
+    text,
+    time: new Date().toLocaleTimeString("sv-SE", {
+      hour: "2-digit",
+      minute: "2-digit"
+    })
+  });
+
+  saveChats();
+  renderConversation();
+  scrollMessagesToBottom();
+}
   </script>
+<script>
+  let deferredPrompt;
+  const downloadBtn = document.getElementById("downloadBtn");
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+  });
+
+  downloadBtn?.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    if (!deferredPrompt) {
+      showDownloadSystemMessage(
+        "För att installera BlueChat, öppna webbläsarens meny och välj ”Lägg till på startskärmen”."
+      );
+      return;
+    }
+
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  });
+</script>
 </body>
 </html>
