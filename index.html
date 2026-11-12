@@ -147,28 +147,31 @@
       </div>
     </section>
 
-    <aside id="details" class="mobile-hidden hidden w-[270px] shrink-0 border-l border-white/[.06] bg-panel lg:flex lg:flex-col">
-      <div class="scrollbar-none min-h-0 flex-1 overflow-y-auto px-5">
-        <div class="flex min-h-full flex-col justify-center">
-        <div class="-mx-5 flex h-[72px] shrink-0 items-center justify-between border-b border-white/[.06] px-5"><h2 class="text-xs font-bold">Konversationsinfo</h2><button id="close-details" aria-label="Stäng detaljer" class="rounded-lg p-1.5 text-muted hover:bg-white/10 hover:text-white lg:hidden">✕</button></div>
-        <div class="flex flex-col items-center border-b border-white/[.06] py-7 text-center">
-          <button id="details-avatar" type="button" class="avatar h-[76px] w-[76px] rounded-[26px] bg-[#f5c2e7] text-2xl text-[#342538]">S</button>
-          <h3 id="details-title" class="mt-4 text-base font-bold">Sofia Lind</h3>
-          <p id="details-username" class="mt-1 text-xs text-muted">@sofialind</p>
-          <p id="details-status" class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint"><span class="h-1.5 w-1.5 rounded-full bg-mint"></span>Aktiv nu</p>
-        </div>
-        <div id="group-members-section" class="hidden border-b border-white/[.06] py-5">
-          <h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Medlemmar</h4>
-          <div id="group-members-list" class="space-y-2"></div>
-          <button id="add-group-member" type="button" class="mt-3 w-full rounded-lg border border-white/10 px-3 py-2 text-left text-xs font-semibold text-accent transition hover:bg-accent/10">+ Lägg till medlem</button>
-        </div>
-        <div class="border-b border-white/[.06] py-5"><h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Delade filer</h4><div id="shared-files" class="space-y-2"></div></div>
-        <button id="clear-chat" class="mb-5 mt-5 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-medium text-[#f38ba8] transition hover:bg-[#f38ba8]/10">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18m-2 0-1 14H6L5 6m4 0V4h6v2m-5 5v5m4-5v5"/></svg>Rensa konversation
-        </button>
-        </div>
+<aside id="details" class="mobile-hidden hidden w-[270px] shrink-0 border-l border-white/[.06] bg-panel lg:flex lg:flex-col">
+  <div class="flex h-[72px] shrink-0 items-center justify-between border-b border-white/[.06] px-5">
+    <h2 class="text-xs font-bold">Konversationsinfo</h2>
+    <button id="close-details" aria-label="Stäng detaljer" class="rounded-lg p-1.5 text-muted hover:bg-white/10 hover:text-white lg:hidden">✕</button>
+  </div>
+  <div class="scrollbar-none min-h-0 flex-1 overflow-y-auto px-5">
+    <div class="flex min-h-full flex-col justify-center">
+      <div class="flex flex-col items-center border-b border-white/[.06] py-7 text-center">
+        <button id="details-avatar" type="button" class="avatar h-[76px] w-[76px] rounded-[26px] bg-[#f5c2e7] text-2xl text-[#342538]">S</button>
+        <h3 id="details-title" class="mt-4 text-base font-bold">Sofia Lind</h3>
+        <p id="details-username" class="mt-1 text-xs text-muted">@sofialind</p>
+        <p id="details-status" class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint"><span class="h-1.5 w-1.5 rounded-full bg-mint"></span>Aktiv nu</p>
       </div>
-    </aside>
+      <div id="group-members-section" class="hidden border-b border-white/[.06] py-5">
+        <h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Medlemmar</h4>
+        <div id="group-members-list" class="space-y-2"></div>
+        <button id="add-group-member" type="button" class="mt-3 w-full rounded-lg border border-white/10 px-3 py-2 text-left text-xs font-semibold text-accent transition hover:bg-accent/10">+ Lägg till medlem</button>
+      </div>
+      <div class="border-b border-white/[.06] py-5"><h4 class="mb-3 text-[10px] font-bold uppercase tracking-[.15em] text-muted/70">Delade filer</h4><div id="shared-files" class="space-y-2"></div></div>
+      <button id="clear-chat" class="mb-5 mt-5 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-medium text-[#f38ba8] transition hover:bg-[#f38ba8]/10">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18m-2 0-1 14H6L5 6m4 0V4h6v2m-5 5v5m4-5v5"/></svg>Rensa konversation
+      </button>
+    </div>
+  </div>
+</aside>
   </main>
 
   <div id="image-preview-modal" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Förstorad bild">
