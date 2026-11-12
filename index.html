@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#11111b">
-  <title>MaxChat - chatta med dina medmänniskor</title>
+  <title>BlueChat - chatta med dina medmänniskor</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -149,16 +149,15 @@
     font-size: 14px; border-radius: 16px;
     background: rgb(243 139 168 / 8%);
   }
-}
   </style>
 </head>
 <body class="h-dvh overflow-hidden bg-ink text-slate-100 antialiased">
   <main class="flex h-full overflow-hidden bg-ink">
     <aside id="sidebar" class="flex w-full shrink-0 flex-col border-r border-white/[.06] bg-panel md:w-[290px]">
       <header class="flex h-[72px] items-center justify-between border-b border-white/[.06] px-5">
-        <a href="#" class="flex items-center gap-3" aria-label="MaxChat startsida">
+        <a href="#" class="flex items-center gap-3" aria-label="BlueChat startsida">
           <img src="logo.svg" alt="" class="h-10 w-10 rounded-2xl shadow-lg shadow-accent/10">
-          <span><span class="block text-[17px] font-extrabold tracking-tight">MaxChat</span><span class="block text-[10px] font-semibold uppercase tracking-[.18em] text-muted">dina människor, nära</span></span>
+          <span><span class="block text-[17px] font-extrabold tracking-tight">BlueChat</span><span class="block text-[10px] font-semibold uppercase tracking-[.18em] text-muted">dina människor, nära</span></span>
         </a>
       </header>
 
@@ -408,7 +407,7 @@
     let friends = loadFriends();
     let hiddenConversationIds = loadHiddenConversations();
     let profileAvatarDraft = profile.avatar || "";
-    let selectedId = localStorage.getItem("maxchat-selected") || chats[0]?.id || "";
+    let selectedId = localStorage.getItem("bluechat-selected") || chats[0]?.id || "";
     let selectedFiles = [];
     let bottomScrollRequest = 0;
     let bottomScrollObserver = null;
@@ -463,7 +462,7 @@
     }
     function loadProfile() {
       try {
-        const saved = JSON.parse(localStorage.getItem("maxchat-profile"));
+        const saved = JSON.parse(localStorage.getItem("bluechat-profile"));
         return { name: typeof saved?.name === "string" && saved.name.trim() ? saved.name.trim() : "Max Rubin", about: typeof saved?.about === "string" ? saved.about : "", status: ["online", "away", "busy"].includes(saved?.status) ? saved.status : "online", avatar: typeof saved?.avatar === "string" && saved.avatar.startsWith("data:image/") ? saved.avatar : "" };
       } catch (error) {
         console.warn("Kunde inte läsa sparad profil.", error);
@@ -472,7 +471,7 @@
     }
     function loadFriends() {
       try {
-        const saved = JSON.parse(localStorage.getItem("maxchat-friends"));
+        const saved = JSON.parse(localStorage.getItem("bluechat-friends"));
         if (Array.isArray(saved)) return saved.filter(id => typeof id === "string");
       } catch (error) {
         console.warn("Kunde inte läsa sparade vänner.", error);
@@ -481,7 +480,7 @@
     }
     function loadHiddenConversations() {
       try {
-        const saved = JSON.parse(localStorage.getItem("maxchat-hidden-conversations"));
+        const saved = JSON.parse(localStorage.getItem("bluechat-hidden-conversations"));
         return Array.isArray(saved) ? saved.filter(id => typeof id === "string") : [];
       } catch (error) {
         console.warn("Kunde inte läsa dolda konversationer.", error);
@@ -489,11 +488,11 @@
       }
     }
     function saveFriends() {
-      try { localStorage.setItem("maxchat-friends", JSON.stringify(friends)); }
+      try { localStorage.setItem("bluechat-friends", JSON.stringify(friends)); }
       catch (error) { showToast("Kunde inte spara vänlistan."); console.error("Kunde inte spara vänlistan.", error); }
     }
     function saveHiddenConversations() {
-      try { localStorage.setItem("maxchat-hidden-conversations", JSON.stringify(hiddenConversationIds)); }
+      try { localStorage.setItem("bluechat-hidden-conversations", JSON.stringify(hiddenConversationIds)); }
       catch (error) { showToast("Kunde inte spara konversationslistan."); console.error("Kunde inte spara konversationslistan.", error); }
     }
     function profileInitials(name = currentUser) {
@@ -608,7 +607,7 @@ status.lastChild.textContent = dm.label;
     }
     function loadChats() {
       try {
-        const saved = JSON.parse(localStorage.getItem("maxchat-chats"));
+        const saved = JSON.parse(localStorage.getItem("bluechat-chats"));
         const loaded = Array.isArray(saved) ? saved : structuredClone(starterChats);
         loaded.forEach(chat => { if (chat.type === "dm" && !chat.status) chat.status = starterChats.find(item => item.id === chat.id)?.status; });
         loaded.forEach(chat => {
@@ -625,7 +624,7 @@ status.lastChild.textContent = dm.label;
       }
     }
     function saveChats() {
-      try { localStorage.setItem("maxchat-chats", JSON.stringify(chats)); }
+      try { localStorage.setItem("bluechat-chats", JSON.stringify(chats)); }
       catch (error) { showToast("Kunde inte spara lokalt. Lagringsutrymmet kan vara fullt."); console.error("Kunde inte spara konversationer.", error); }
     }
     function showToast(message) {
@@ -789,7 +788,7 @@ status.lastChild.textContent = dm.label;
       if (!chat) { showToast("Välj en konversation innan du ringer."); return; }
       showCallModal(chat.name, "Startar samtal…", profileInitials(chat.name));
       if (!await waitForSignaling()) {
-        showCallError(location.protocol === "file:" ? "Starta MaxChat-servern för att ringa." : "Kunde inte ansluta till samtalsservern. Kontrollera anslutningen och försök igen.");
+        showCallError(location.protocol === "file:" ? "Starta BlueChat-servern för att ringa." : "Kunde inte ansluta till samtalsservern. Kontrollera anslutningen och försök igen.");
         return;
       }
       if (!navigator.mediaDevices?.getUserMedia || !window.RTCPeerConnection) {
@@ -1066,7 +1065,7 @@ status.lastChild.textContent = dm.label;
         const nextChat = chats.find(chat => !hiddenConversationIds.includes(chat.id));
         if (nextChat) {
           selectedId = nextChat.id;
-          localStorage.setItem("maxchat-selected", selectedId);
+          localStorage.setItem("bluechat-selected", selectedId);
           $("#composer-wrap").classList.remove("hidden");
           renderConversation(); renderDetails();
         } else {
@@ -1087,7 +1086,7 @@ status.lastChild.textContent = dm.label;
       saveHiddenConversations();
       $("#composer-wrap").classList.remove("hidden");
       const chat = activeChat(); chat.unread = 0;
-      localStorage.setItem("maxchat-selected", id);
+      localStorage.setItem("bluechat-selected", id);
       renderChatList($("#chat-search").value); renderConversation(); renderDetails();
       $("#sidebar").classList.add("mobile-hidden"); $("#chat-area").classList.remove("mobile-hidden");
       scrollMessagesToBottom();
@@ -1129,7 +1128,7 @@ status.lastChild.textContent = dm.label;
       const previousScrollTop = $("#message-list").scrollTop;
       const chat = activeChat();
       if (!chat) {
-        $("#chat-title").textContent = "MaxChat";
+        $("#chat-title").textContent = "BlueChat";
         $("#chat-title").setAttribute("role", "heading");
         $("#chat-title").setAttribute("aria-level", "1");
         $("#chat-title").setAttribute("tabindex", "-1");
@@ -1449,7 +1448,7 @@ status.lastChild.textContent = dm.label;
       const chat = activeChat();
       if (chat?.type !== "group" || !(chat.members || []).includes(currentUser)) return;
       const availableUsers = knownUsers().filter(user => user !== currentUser && !chat.members.includes(user));
-      if (!availableUsers.length) { showToast("Det finns inga fler MaxChat-användare att lägga till."); return; }
+      if (!availableUsers.length) { showToast("Det finns inga fler BlueChat-användare att lägga till."); return; }
       $("#group-add-member-select").innerHTML = availableUsers.map(user => `<option value="${escapeHtml(user)}">${escapeHtml(user)}</option>`).join("");
       $("#add-group-member-modal").classList.remove("hidden");
       $("#add-group-member-modal").classList.add("flex");
@@ -1650,9 +1649,9 @@ status.lastChild.textContent = dm.label;
       if (nextChat) {
         hiddenConversationIds = hiddenConversationIds.filter(id => id !== nextChat.id);
         saveHiddenConversations();
-        localStorage.setItem("maxchat-selected", selectedId);
+        localStorage.setItem("bluechat-selected", selectedId);
       } else {
-        localStorage.removeItem("maxchat-selected");
+        localStorage.removeItem("bluechat-selected");
       }
       renderChatList($("#chat-search").value);
       renderConversation();
@@ -1707,7 +1706,7 @@ status.lastChild.textContent = dm.label;
       const name = $("#profile-name-input").value.trim();
       if (!name) return;
       const nextProfile = { name, about: $("#profile-about-input").value.trim(), status: $("#profile-status-input").value, avatar: profileAvatarDraft };
-      try { localStorage.setItem("maxchat-profile", JSON.stringify(nextProfile)); }
+      try { localStorage.setItem("bluechat-profile", JSON.stringify(nextProfile)); }
       catch (error) { showToast("Kunde inte spara profilinställningarna."); console.error("Kunde inte spara profilinställningarna.", error); return; }
       const previousName = currentUser;
       if (previousName !== name) {
