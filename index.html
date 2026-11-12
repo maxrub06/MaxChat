@@ -1810,13 +1810,6 @@ status.lastChild.textContent = dm.label;
   downloadBtn?.addEventListener("click", async (event) => {
     event.preventDefault();
 
-    if (!deferredPrompt) {
-      showDownloadSystemMessage(
-        "För att installera BlueChat, öppna webbläsarens meny och välj ”Lägg till på startskärmen”."
-      );
-      return;
-    }
-
     deferredPrompt.prompt();
     await deferredPrompt.userChoice;
     deferredPrompt = null;
