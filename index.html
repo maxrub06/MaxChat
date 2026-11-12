@@ -528,6 +528,15 @@
     function memberIsActive(name) {
       return memberActivityStatus(name).label !== "Offline";
     }
+    function userStatus(name) {
+  const status = memberActivityStatus(name);
+  const tone = {
+    "Aktiv nu": ["text-mint", "bg-mint/10 text-mint"],
+    "Borta": ["text-[#f9e2af]", "bg-[#f9e2af]/10 text-[#f9e2af]"],
+    "Stör ej": ["text-[#f38ba8]", "bg-[#f38ba8]/10 text-[#f38ba8]"]
+  }[status.label] || ["text-muted", "bg-white/[.06] text-muted"];
+  return { ...status, text: tone[0], pill: tone[1] };
+}
     function memberAvatarMarkup(chat, name) {
       const directChat = chats.find(item => item.type === "dm" && item.name.toLocaleLowerCase("sv") === name.toLocaleLowerCase("sv"));
       const message = (chat.messages || []).find(item => item.author === name && typeof item.avatar === "string" && item.avatar.startsWith("data:image/"));
@@ -551,9 +560,10 @@
         status.lastChild.textContent = `${activeCount} av ${members.length} aktiva`;
         return;
       }
-      status.className = "mt-3 inline-flex items-center gap-1.5 rounded-full bg-mint/10 px-2.5 py-1 text-[10px] font-semibold text-mint";
-      label.className = "h-1.5 w-1.5 rounded-full bg-mint";
-      status.lastChild.textContent = "Aktiv nu";
+const dm = userStatus(chat.name);
+status.className = `mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold ${dm.pill}`;
+label.className = `h-1.5 w-1.5 rounded-full ${dm.dot}`;
+status.lastChild.textContent = dm.label;
     }
     function renderProfile() {
       const status = {
@@ -579,8 +589,8 @@
       const visibleFriends = friends.map(id => chats.find(chat => chat.id === id)).filter(friend => friend?.type === "dm" && friend.name.toLocaleLowerCase("sv").includes(needle));
       $("#friends-list").innerHTML = visibleFriends.length ? visibleFriends.map(friend => `
         <div class="flex items-center gap-3 rounded-xl px-2.5 py-2.5 transition hover:bg-white/[.04]">
-          <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background:${escapeHtml(friend.color)};color:#242333">${escapeHtml(friend.initials)}</span>${friend.online ? '<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#1e1e2e] bg-mint"></i>' : ""}</span>
-          <span class="min-w-0 flex-1"><span class="block truncate text-xs font-semibold">${escapeHtml(friend.name)}</span><span class="mt-1 block text-[10px] ${friend.online ? "text-mint" : "text-muted/60"}">${friend.online ? "Aktiv nu" : "Offline"}</span></span>
+          <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background:${escapeHtml(friend.color)};color:#242333">${escapeHtml(friend.initials)}</span>${userStatus(friend.name).label !== "Offline" ? `<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#1e1e2e] ${userStatus(friend.name).dot}"></i>` : ""}</span>
+          <span class="min-w-0 flex-1"><span class="block truncate text-xs font-semibold">${escapeHtml(friend.name)}</span><span class="mt-1 block text-[10px] ${userStatus(friend.name).text}">${userStatus(friend.name).label}</span></span>
           <button type="button" data-message-friend="${escapeHtml(friend.id)}" class="rounded-lg bg-accent/10 px-2.5 py-2 text-[10px] font-semibold text-accent transition hover:bg-accent/20">Meddelande</button>
           <button type="button" data-remove-friend="${escapeHtml(friend.id)}" aria-label="Ta bort ${escapeHtml(friend.name)} som vän" title="Ta bort vän" class="rounded-lg p-2 text-muted transition hover:bg-[#f38ba8]/10 hover:text-[#f38ba8]">✕</button>
         </div>`).join("") : '<p class="px-3 py-5 text-center text-xs text-muted/60">Inga vänner hittades.</p>';
@@ -600,6 +610,7 @@
       try {
         const saved = JSON.parse(localStorage.getItem("maxchat-chats"));
         const loaded = Array.isArray(saved) ? saved : structuredClone(starterChats);
+        loaded.forEach(chat => { if (chat.type === "dm" && !chat.status) chat.status = starterChats.find(item => item.id === chat.id)?.status; });
         loaded.forEach(chat => {
           if (chat.type !== "group") return;
           chat.members = [...new Set(Array.isArray(chat.members) ? chat.members.filter(member => typeof member === "string" && member.trim()) : [])];
@@ -1024,7 +1035,7 @@
       $("#chat-list").innerHTML = filtered.length ? filtered.map((chat) => `
         <div class="group flex items-center rounded-xl transition hover:bg-white/[.05] ${chat.id === selectedId ? "chat-active" : ""}">
           <button data-chat-id="${escapeHtml(chat.id)}" class="chat-row flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2.5 py-2.5 text-left">
-            <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background-color:${escapeHtml(chat.color)};background-image:${chat.logo ? `url('${escapeHtml(chat.logo)}')` : "none"};background-position:center;background-size:cover;color:#242333">${chat.logo ? "" : escapeHtml(chat.initials)}</span>${chat.online ? '<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-panel bg-mint"></i>' : ""}</span>
+            <span class="relative"><span class="avatar h-10 w-10 rounded-[15px] text-sm" style="background-color:${escapeHtml(chat.color)};background-image:${chat.logo ? `url('${escapeHtml(chat.logo)}')` : "none"};background-position:center;background-size:cover;color:#242333">${chat.logo ? "" : escapeHtml(chat.initials)}</span>${chat.type === "dm" && userStatus(chat.name).label !== "Offline" ? `<i class="online-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-panel ${userStatus(chat.name).dot}"></i>` : ""}</span>
             <span class="min-w-0 flex-1"><span class="flex items-center justify-between gap-2"><span class="truncate text-[12px] font-semibold ${chat.unread ? "text-white" : "text-slate-300"}">${escapeHtml(chat.name)}</span><time class="shrink-0 text-[9px] text-muted/60">${escapeHtml(formatChatTime(chat))}</time></span><span class="mt-1 flex items-center justify-between gap-2"><span class="truncate text-[10px] text-muted/65">${escapeHtml(chat.type === "group" ? `${(chat.members || []).length} medlemmar` : chat.preview || "Börja en konversation")}</span>${chat.unread ? `<span class="grid h-[17px] min-w-[17px] place-items-center rounded-full bg-accent px-1 text-[9px] font-bold text-[#211a2c]">${chat.unread}</span>` : ""}</span></span>
           </button>
           <button type="button" data-hide-chat="${escapeHtml(chat.id)}" aria-label="Ta bort ${escapeHtml(chat.name)} från konversationslistan" title="Ta bort från listan" class="mr-1 rounded-lg p-2 text-muted opacity-60 transition hover:bg-white/[.08] hover:text-[#f38ba8] md:opacity-0 md:group-hover:opacity-100">✕</button>
@@ -1059,8 +1070,9 @@
           $("#composer-wrap").classList.remove("hidden");
           renderConversation(); renderDetails();
         } else {
-          $("#chat-title").textContent = "MaxChat";
-          $("#chat-subtitle").textContent = "Välj en konversation";
+          const dmStatus = chat.type === "dm" ? userStatus(chat.name) : null;
+          $("#chat-subtitle").textContent = chat.type === "group" ? `${activeMembers} av ${groupMembers.length} aktiva` : dmStatus.label === "Offline" ? "Senast aktiv nyligen" : `● ${dmStatus.label}`;
+          $("#chat-subtitle").className = `mt-0.5 text-[11px] ${dmStatus ? dmStatus.text : "text-muted"}`;
           $("#message-list").replaceChildren();
           $("#composer-wrap").classList.add("hidden");
         }
