@@ -48,6 +48,97 @@
       #sidebar.mobile-hidden, #details.mobile-hidden { display: none; }
       #chat-area.mobile-hidden { display: none; }
     }
+    /* Konversationsinfo – mobil/surfplatta */
+@media (max-width: 1023px) {
+  #details {
+    position: fixed; inset: 0; z-index: 20;
+    width: 100%; max-width: 100vw; height: 100dvh;
+    border-left: 0; background: #11111b; overflow: hidden;
+  }
+  #details.flex { display: flex; flex-direction: column; }
+
+  /* Header: innehållet centrerat i höjdled, linjen under */
+  #details > div:first-child {
+    flex: none; box-sizing: border-box;
+    height: calc(64px + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) 16px 0;
+    display: flex; flex-direction: row-reverse;
+    align-items: center; justify-content: flex-end; gap: 12px;
+    background: #11111b;
+    border-bottom: 1px solid rgb(255 255 255 / 10%);
+  }
+  #details > div:first-child h2 { font-size: 16px; line-height: 1; margin: 0; }
+  #close-details {
+    display: grid; place-items: center;
+    width: 40px; height: 40px; padding: 0; line-height: 1;
+    font-size: 15px; border-radius: 12px;
+    background: rgb(255 255 255 / 6%);
+  }
+
+  /* Allt under linjen: eget scrollområde */
+  #details > div:nth-child(2) {
+    flex: 1 1 auto; min-height: 0;
+    overflow-y: auto; overflow-x: hidden;
+    padding: 0 16px;
+  }
+  #details > div:nth-child(2) > div {
+    min-height: 0; justify-content: flex-start;
+    width: 100%; max-width: 480px; margin: 0 auto;
+    padding: 20px 0 16px;
+  }
+
+  /* Profilblock */
+  #details > div:nth-child(2) > div > div:first-child { border-bottom: 0; padding: 0 0 20px; }
+  #details-avatar { width: 88px; height: 88px; border-radius: 30px; font-size: 30px; }
+  #details-title { font-size: 20px; margin-top: 14px; }
+  #details-username { font-size: 13px; }
+  #details-status { font-size: 11px; padding: 6px 12px; }
+
+  /* Sektioner som kort */
+  #details .py-5 {
+    background: #181825;
+    border: 1px solid rgb(255 255 255 / 6%);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  #details h4 { font-size: 11px; margin-bottom: 12px; }
+
+  /* Medlemmar: raden bryts så inget hamnar utanför skärmen */
+  #group-members-list > div {
+    flex-wrap: wrap; padding: 10px 12px; border-radius: 14px; gap: 8px 12px;
+  }
+  #group-members-list .avatar { width: 38px; height: 38px; border-radius: 13px; font-size: 12px; }
+  #group-members-list .min-w-0 { flex: 1 1 120px; }
+  #group-members-list .min-w-0 > span:first-child { font-size: 14px; }
+  #group-members-list .min-w-0 > span:last-child { font-size: 11px; margin-top: 2px; }
+  #group-members-list span.rounded-full { font-size: 11px; padding: 4px 10px; }
+  #group-members-list button[data-transfer-owner] {
+    flex: 1 1 auto; font-size: 12px; padding: 9px 10px; border-radius: 10px;
+    background: rgb(203 166 247 / 10%);
+  }
+  #group-members-list button[data-remove-member] {
+    width: 38px; height: 38px; font-size: 20px; border-radius: 10px;
+    background: rgb(243 139 168 / 8%);
+  }
+  #add-group-member {
+    min-height: 46px; margin-top: 12px; padding: 12px 14px;
+    font-size: 13px; text-align: center; border-radius: 14px;
+  }
+
+  /* Delade filer */
+  #shared-files > div { padding: 12px; border-radius: 12px; gap: 10px; }
+  #shared-files span.truncate { font-size: 13px; }
+  #shared-files p { font-size: 13px; }
+
+  /* Rensa / lämna / ta bort */
+  #clear-chat {
+    justify-content: center; gap: 8px;
+    min-height: 48px; margin: 4px 0 0; padding: 14px;
+    font-size: 14px; border-radius: 16px;
+    background: rgb(243 139 168 / 8%);
+  }
+}
   </style>
 </head>
 <body class="h-dvh overflow-hidden bg-ink text-slate-100 antialiased">
@@ -147,7 +238,7 @@
       </div>
     </section>
 
-<aside id="details" class="mobile-hidden hidden w-[270px] shrink-0 border-l border-white/[.06] bg-panel lg:flex lg:flex-col">
+<aside id="details" class="mobile-hidden hidden w-[270px] shrink-0 border-l border-white/[.06] bg-panel max-lg:fixed max-lg:inset-0 max-lg:z-20 max-lg:w-full lg:flex lg:flex-col">
   <div class="flex h-[72px] shrink-0 items-center justify-between border-b border-white/[.06] px-5">
     <h2 class="text-xs font-bold">Konversationsinfo</h2>
     <button id="close-details" aria-label="Stäng detaljer" class="rounded-lg p-1.5 text-muted hover:bg-white/10 hover:text-white lg:hidden">✕</button>
