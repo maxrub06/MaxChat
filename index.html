@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
 <link rel="manifest" href="/manifest.json">
-<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0b1020">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="BlueChat">
@@ -1443,7 +1443,7 @@ status.lastChild.textContent = dm.label;
       document.querySelectorAll(".message").forEach(message => { message.classList.toggle("hidden", term.length > 0 && !message.dataset.text.toLocaleLowerCase("sv").includes(term)); });
     });
     $("#new-chat-small").addEventListener("click", openGroupModal);
-    function openGroupModal() { updateKnownUserOptions(); $("#group-modal").classList.remove("hidden"); $("#group-modal").classList.add("flex"); $("#group-name").focus(); }
+    function openGroupModal() { updateKnownUserOptions(); $("#group-modal").classList.remove("hidden"); $("#group-modal").classList.add("flex");}
     function closeGroupModal() { $("#group-modal").classList.add("hidden"); $("#group-modal").classList.remove("flex"); }
     $("#close-modal").addEventListener("click", closeGroupModal);
     $("#group-modal").addEventListener("click", event => { if (event.target === $("#group-modal")) closeGroupModal(); });
@@ -1686,7 +1686,7 @@ status.lastChild.textContent = dm.label;
       $("#profile-about-input").value = profile.about;
       $("#profile-status-input").value = profile.status;
       renderProfile();
-      $("#profile-modal").classList.remove("hidden"); $("#profile-modal").classList.add("flex"); $("#profile-name-input").focus();
+      $("#profile-modal").classList.remove("hidden"); $("#profile-modal").classList.add("flex");
     }
     function closeProfileModal() {
       profileAvatarDraft = profile.avatar || "";
