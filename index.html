@@ -1620,7 +1620,7 @@ status.lastChild.textContent = dm.label;
            requestGroupConfirmation("Vill du rensa alla meddelanden i den här konversationen? Det går inte att ångra.", () => {
         const sentAt = Date.now();
         const time = new Date(sentAt).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
-        chat.messages = [{ id: `system-${sentAt}`, type: "system", text: "Konversationen har rensats.", time }];
+        chat.messages = [{ id: `system-${sentAt}`, type: "system", text: "Konversationen har rensats.", time, align: "left" }];
         chat.preview = "Konversationen har rensats.";
         chat.time = time;
         saveChats(); renderConversation(); renderChatList($("#chat-search").value); renderDetails(); showToast("Konversationen har rensats.");
